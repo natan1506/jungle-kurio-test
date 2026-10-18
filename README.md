@@ -2,6 +2,9 @@
 
 Solução do [desafio frontend](https://github.com/junglegaming/frontend-challenge) com base no [Figma](https://www.figma.com/design/Ff0SksUi7UFtPWUO8kyNtw/Frontend-Challenge?node-id=0-1). REST e Socket.IO rodam simulados com MSW, inclusive no deploy.
 
+- **App publicado:** https://jungle-kurio-test.vercel.app
+- **Repositório:** https://github.com/natan1506/jungle-kurio-test
+
 Decisões, contratos e limitações estão em [ARCHITECTURE.md](ARCHITECTURE.md).
 
 **Stack:** React 19, TypeScript, Vite, TanStack Router, TanStack Query, Axios, socket.io-client, Tailwind 4, shadcn/ui, MSW 2 (+ `@mswjs/socket.io-binding`), Playwright e Lighthouse.
@@ -116,7 +119,7 @@ Mede início e detalhe em mobile e desktop, três vezes cada, e salva a mediana.
 
 ## Deploy
 
-O build de produção já inclui os mocks. O `vercel.json` e o `public/_redirects` (Netlify/Cloudflare) fazem o fallback de SPA para acesso direto e refresh de qualquer rota.
+Publicado na Vercel em https://jungle-kurio-test.vercel.app, a partir da `main`. O build de produção já inclui os mocks. O `vercel.json` e o `public/_redirects` (Netlify/Cloudflare) fazem o fallback de SPA para acesso direto e refresh de qualquer rota.
 
 ```bash
 npx vercel --prod
