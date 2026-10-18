@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useAvatar, useChangePassword, useProfile, useSaveWallet, useUpdateProfile, useWallets } from '@/features/account/hooks'
 import { useLogout } from '@/features/auth/hooks'
 import { cn } from '@/lib/utils'
+import { focusFirstInvalid } from '@/lib/focus'
 import { safeRedirect } from '@/lib/redirect'
 import { PasswordInput } from './auth'
 
@@ -32,9 +33,9 @@ const MENU: { label: string; icon: typeof User; to?: '/conta/perfil' | '/conta/c
 function AccountLayout({ title, children }: { title: string; children: ReactNode }) {
   const logout = useLogout()
   return (
-    <div className="container-page grid gap-6 py-6 md:grid-cols-[220px_1fr] md:py-10">
+    <div className="container-page grid grid-cols-1 gap-6 py-6 md:grid-cols-[220px_1fr] md:py-10">
       <MobileTopBar title={title} className="col-span-full -mb-2" />
-      <aside className="h-fit rounded-xl bg-card p-3">
+      <aside className="h-fit min-w-0 rounded-xl bg-card p-3">
         <h2 className="px-3 py-2 text-sm font-semibold">Meu perfil</h2>
         <nav aria-label="Conta">
           <ul className="flex gap-1 overflow-x-auto md:flex-col">
@@ -136,11 +137,13 @@ export function ProfilePage() {
       if (pwd.confirm !== pwd.newPassword) next.confirm = 'As senhas não coincidem.'
     }
     setErrors(next)
-    if (Object.keys(next).length) return
+    const formEl = e.currentTarget as HTMLFormElement
+    if (Object.keys(next).length) return focusFirstInvalid(formEl)
     try {
       await update.mutateAsync(form)
     } catch (err) {
       if (isApiError(err)) setErrors(err.fieldErrors)
+      focusFirstInvalid(formEl)
       if (isApiError(err) && !Object.keys(err.fieldErrors).length && err.status !== 401) toast.error(err.message)
       return
     }
@@ -150,6 +153,7 @@ export function ProfilePage() {
         setPwd({ currentPassword: '', newPassword: '', confirm: '' })
       } catch (err) {
         if (isApiError(err)) setErrors(err.fieldErrors)
+        focusFirstInvalid(formEl)
       }
     }
   }
@@ -191,6 +195,7 @@ export function ProfilePage() {
                 accept="image/png,image/jpeg,image/webp,image/gif"
                 className="sr-only"
                 id="avatar-input"
+                aria-label="Enviar nova imagem de avatar"
                 aria-describedby={avatarError ? 'avatar-error' : undefined}
                 onChange={(e) => {
                   onFile(e.target.files?.[0])
@@ -274,7 +279,8 @@ function WalletForm({ initial, id, slot, onSaved }: { initial: WalletInput; id?:
     if (!/^0x[a-fA-F0-9]{40}$/.test(form.address)) next.address = 'Endereço inválido (0x + 40 hexadecimais).'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email)) next.email = 'Informe um e-mail válido.'
     setErrors(next)
-    if (Object.keys(next).length) return
+    const formEl = e.currentTarget as HTMLFormElement
+    if (Object.keys(next).length) return focusFirstInvalid(formEl)
     save.mutate(
       { id, input: { ...form, slot } },
       {
@@ -282,6 +288,7 @@ function WalletForm({ initial, id, slot, onSaved }: { initial: WalletInput; id?:
         onError: (err) => {
           if (isApiError(err)) {
             setErrors(err.fieldErrors)
+            focusFirstInvalid(formEl)
             if (!Object.keys(err.fieldErrors).length && err.status !== 401) toast.error(err.message)
           }
         },
@@ -289,7 +296,6 @@ function WalletForm({ initial, id, slot, onSaved }: { initial: WalletInput; id?:
     )
   }
 
-  const p = slot === 'primary' ? 'pri' : 'sec'
   return (
     <form noValidate onSubmit={submit} className="grid gap-4 md:grid-cols-2" aria-label={`Carteira ${slot === 'primary' ? 'principal' : 'secundária'}`}>
       <FormField label="Nome de exibição" required error={errors.displayName}>
@@ -301,7 +307,7 @@ function WalletForm({ initial, id, slot, onSaved }: { initial: WalletInput; id?:
       <FormField label="Rede" required error={errors.network}>
         {(a) => (
           <Select value={form.network} onValueChange={(v) => set('network', v as NetworkKey)}>
-            <SelectTrigger {...a} className="w-full" id={`${p}-network`}>
+            <SelectTrigger {...a} className="w-full">
               <SelectValue placeholder="Selecione uma rede" />
             </SelectTrigger>
             <SelectContent>

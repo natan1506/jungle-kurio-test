@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useLogin, useRegister } from '@/features/auth/hooks'
+import { focusFirstInvalid } from '@/lib/focus'
 import { safeRedirect } from '@/lib/redirect'
 import { cn } from '@/lib/utils'
 import { HomePage } from './home'
@@ -92,10 +93,11 @@ export function LoginPage({ redirect, reason }: { redirect?: string; reason?: st
     if (!EMAIL_RE.test(email.trim())) next.email = 'Informe um e-mail válido.'
     if (!password) next.password = 'Informe sua senha.'
     setErrors(next)
-    if (Object.keys(next).length) return
+    const form = e.currentTarget as HTMLFormElement
+    if (Object.keys(next).length) return focusFirstInvalid(form)
     login.mutate(
       { email: email.trim(), password },
-      { onSuccess: () => void navigate({ to: safeRedirect(redirect), replace: true }) },
+      { onSuccess: () => void navigate({ to: safeRedirect(redirect), replace: true }), onError: () => focusFirstInvalid(form) },
     )
   }
 
@@ -175,10 +177,11 @@ export function RegisterPage({ redirect }: { redirect?: string }) {
     }
     if (values.confirm !== values.password) next.confirm = 'As senhas não coincidem.'
     setErrors(next)
-    if (Object.values(next).some(Boolean)) return
+    const form = e.currentTarget as HTMLFormElement
+    if (Object.values(next).some(Boolean)) return focusFirstInvalid(form)
     register.mutate(
       { username: values.username.trim(), email: values.email.trim(), password: values.password },
-      { onSuccess: () => void navigate({ to: safeRedirect(redirect), replace: true }) },
+      { onSuccess: () => void navigate({ to: safeRedirect(redirect), replace: true }), onError: () => focusFirstInvalid(form) },
     )
   }
 

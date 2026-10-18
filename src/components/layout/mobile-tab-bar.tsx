@@ -37,7 +37,7 @@ export function MobileTabBar() {
           </Link>
         </li>
         <li className="flex flex-1">
-          <Link to="/carrinho" className={item} aria-label={`Carrinho, ${count} ${count === 1 ? 'item' : 'itens'}`}>
+          <Link to="/carrinho" className={item}>
             <span className="relative">
               <ShoppingCart className="size-5" aria-hidden />
               {count > 0 && (
@@ -46,7 +46,9 @@ export function MobileTabBar() {
                 </span>
               )}
             </span>
-            Carrinho
+            <span>
+              Carrinho<span className="sr-only">, {count} {count === 1 ? 'item' : 'itens'}</span>
+            </span>
           </Link>
         </li>
         <li className="flex flex-1">
