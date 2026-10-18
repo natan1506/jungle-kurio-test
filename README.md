@@ -1,128 +1,110 @@
-# Kurio — Marketplace de NFTs (v1)
+# Kurio — Marketplace de NFTs
 
-Implementação do [desafio frontend]x a partir do [layout no Figma](https://www.figma.com/design/Ff0SksUi7UFtPWUO8kyNtw/Frontend-Challenge?node-id=0-1).
-Fluxos de descoberta, compra e conta do colecionador, em desktop e mobile, com API REST e tempo real (Socket.IO) totalmente simulados por MSW.
+Solução do [desafio frontend](https://github.com/junglegaming/frontend-challenge) com base no [Figma](https://www.figma.com/design/Ff0SksUi7UFtPWUO8kyNtw/Frontend-Challenge?node-id=0-1). REST e Socket.IO rodam simulados com MSW, inclusive no deploy.
 
+Decisões, contratos e limitações estão em [ARCHITECTURE.md](ARCHITECTURE.md).
 
-## Stack
+**Stack:** React 19, TypeScript, Vite, TanStack Router, TanStack Query, Axios, socket.io-client, Tailwind 4, shadcn/ui, MSW 2 (+ `@mswjs/socket.io-binding`), Playwright e Lighthouse.
 
-React 19 · TypeScript 6 · Vite 8 · TanStack Router · TanStack Query · Axios · Socket.IO client · Tailwind CSS 4 · shadcn/ui (Radix) · MSW 2 + `@mswjs/socket.io-binding` · Playwright · Lighthouse · Zod · big.js
+## Rodando
 
-## Setup
-
-Requisitos: Node ≥ 20.19 (testado com 24.22) e npm.
+Node 20.19+.
 
 ```bash
 npm install
 ```
 
 ```bash
-npx playwright install chromium
-```
-
-```bash
 npm run dev
 ```
 
-Abra http://127.0.0.1:5173. Os mocks (REST + Socket.IO) sobem junto com o app.
+O app abre em http://127.0.0.1:5173, já com os mocks. Para os testes E2E, instale o Chromium uma vez:
 
-## Comandos
+```bash
+npx playwright install chromium
+```
 
-| Comando | O que faz |
+| Comando | |
 | --- | --- |
-| `npm run dev` | Desenvolvimento com mocks |
-| `npm run dev:no-mocks` | Desenvolvimento sem MSW (exige backend real em `VITE_API_URL`) |
-| `npm run build` | Verificação de tipos + build otimizado (mocks incluídos no build de demonstração) |
-| `npm run preview` | Serve o build em http://127.0.0.1:4173 |
-| `npm run typecheck` | `tsc -b` |
-| `npm run lint` | oxlint |
-| `npm test` | Playwright (builda, sobe o preview e roda desktop + mobile) |
-| `npm run test:e2e:ui` | Playwright em modo UI |
-| `npm run test:visual:update` | Regera as baselines de regressão visual |
-| `npm run test:report` | Abre o relatório HTML (`playwright-report/`) |
-| `npm run lighthouse` | Auditoria Lighthouse (rode `npm run build` antes) |
-| `npm run images:optimize` | Regera AVIF/WebP a partir dos PNGs originais do Figma |
+| `npm run dev` | dev com mocks |
+| `npm run dev:no-mocks` | dev sem MSW (aponta para `VITE_API_URL`) |
+| `npm run build` / `npm run preview` | build de produção (com mocks) e preview em :4173 |
+| `npm run typecheck` / `npm run lint` | tsc e oxlint |
+| `npm test` | Playwright: builda, sobe o preview e roda desktop + mobile |
+| `npm run test:visual:update` | regera as baselines visuais |
+| `npm run test:report` | abre o relatório HTML |
+| `npm run lighthouse` | auditoria Lighthouse (rode o build antes) |
 
 ## Variáveis de ambiente
 
-Copie `.env.example` para `.env` se quiser alterar algo. Todas são opcionais.
+Todas são opcionais; veja `.env.example`.
 
-| Variável | Padrão | Descrição |
+| Variável | Padrão | |
 | --- | --- | --- |
 | `VITE_ENABLE_MOCKS` | `true` | `false` desliga o MSW |
-| `VITE_API_URL` | `/api` | Base REST usada pelo Axios |
-| `VITE_REALTIME_URL` | `wss://realtime.kurio.mock` | Endpoint Socket.IO (interceptado pelo MSW) |
-| `VITE_ORDER_TIMEOUT_MS` | `8000` | Timeout do cliente na criação do pedido |
+| `VITE_API_URL` | `/api` | base do Axios |
+| `VITE_REALTIME_URL` | `wss://realtime.kurio.mock` | endpoint Socket.IO |
+| `VITE_ORDER_TIMEOUT_MS` | `8000` | timeout da criação de pedido |
 
-## Credenciais fictícias
+## Usuários e cupons de teste
 
-| Usuário | E-mail | Senha | Observação |
-| --- | --- | --- | --- |
-| Ana Souza | `ana@kurio.dev` | `Kurio@123` | 2 carteiras cadastradas, 1 favorito |
-| Bruno Lima | `bruno@kurio.dev` | `Kurio@123` | Sem carteiras (exercita o cadastro) |
+| E-mail | Senha | |
+| --- | --- | --- |
+| `ana@kurio.dev` | `Kurio@123` | duas carteiras e um favorito |
+| `bruno@kurio.dev` | `Kurio@123` | sem carteiras |
 
-Cupons: `KURIO10` (10%), `GENESIS5` (5%), `VERAO2025` (expirado). Qualquer outro código é inválido.
-
-As senhas são guardadas apenas como hash SHA-256 com salt no banco simulado.
+Cupons: `KURIO10` (10%), `GENESIS5` (5%) e `VERAO2025` (expirado). No mock as senhas ficam só como hash SHA-256 com salt.
 
 ## Cenários e reset
 
-Selecione um cenário de três formas:
+Há três formas de trocar o cenário:
+- botão **Mocks** no canto da tela;
+- `?scenario=<nome>` na URL;
+- `POST /api/__mock/scenario`.
 
-1. Botão **Mocks** (canto inferior direito no desktop; ícone na borda direita no mobile) → "Cenário".
-2. Query string: `http://127.0.0.1:5173/?scenario=slow` (fica salvo no localStorage).
-3. `POST /api/__mock/scenario` com `{ "scenario": "slow" }`.
+O reset fica no mesmo painel ou em `POST /api/__mock/reset`, e volta todos os dados ao seed e o cenário para `default`.
 
 | Cenário | Efeito |
 | --- | --- |
-| `default` | Sucesso, latência ~180 ms |
-| `empty` | Catálogo sem resultados |
-| `slow` | Toda requisição leva 2,5 s (skeletons) |
-| `variable` | Latência determinística de 150–1800 ms no catálogo/detalhe (respostas fora de ordem) |
-| `offline` | Falha de rede em todas as chamadas REST |
-| `server-error` | HTTP 500 no catálogo e no detalhe |
-| `flaky` | HTTP 503 na 1ª tentativa de cada consulta do catálogo/detalhe, depois sucesso |
-| `session-expired` | Sessões criadas no login expiram em 20 s |
-| `favorite-fail` | Favoritar/desfavoritar retorna 500 (rollback do otimismo) |
-| `price-change` | Preço do 1º item muda 1,5 s depois de gerar a cotação |
-| `sold-out` | Edição do 1º item esgota 1,5 s depois de gerar a cotação |
-| `order-timeout` | O pedido é criado, mas a resposta só chega após o timeout do cliente |
-| `payment-declined` | Pedidos são recusados |
-| `wallet-reject` | A carteira recusa a conexão no checkout |
+| `default` | sucesso, ~180 ms de latência |
+| `empty` | catálogo vazio |
+| `slow` | 2,5 s em toda requisição |
+| `variable` | latência de 150–1800 ms no catálogo (respostas fora de ordem) |
+| `offline` | erro de rede |
+| `server-error` | 500 no catálogo e no detalhe |
+| `flaky` | 503 na primeira tentativa, depois sucesso |
+| `session-expired` | sessão dura 20 s |
+| `favorite-fail` | favoritar retorna 500 |
+| `price-change` / `sold-out` | o 1º item muda de preço / esgota logo após a cotação |
+| `order-timeout` | pedido criado, mas a resposta passa do timeout |
+| `payment-declined` | pagamento recusado |
+| `wallet-reject` | a carteira recusa a conexão |
 
-**Reset:** painel Mocks → "Resetar dados e cenário" (ou `POST /api/__mock/reset`). Restaura o seed completo (catálogo, usuários, carteiras, favoritos, carrinhos, pedidos) e o cenário `default`.
+O painel também dispara eventos pelo socket: mudar preço, esgotar edição, repetir o último evento, mandar evento antigo, derrubar a conexão e expirar sessões.
 
-O painel também dispara eventos pelo Socket.IO: alterar preço, esgotar edição, duplicar o último evento, enviar evento antigo, derrubar o socket por 4 s e expirar sessões.
+## Reproduzindo as falhas
 
-## Como reproduzir os fluxos de falha
+Os fluxos abaixo partem do login com a Ana e de um item no carrinho.
 
-| Fluxo | Passos |
-| --- | --- |
-| Preço muda no checkout | Ana com item no carrinho → cenário `price-change` → Pagamento → Conectar → Revisar. Em 1,5 s o diálogo marca a cotação como desatualizada e troca "Confirmar" por "Atualizar cotação". |
-| Edição esgota no checkout | Igual ao anterior com `sold-out`. |
-| Cotação obsoleta no servidor | Painel → "Derrubar socket" e "Esgotar 1/50" com o diálogo de revisão aberto → Confirmar: a API responde `409 QUOTE_STALE` e a nova cotação é exibida. |
-| Timeout + idempotência | Cenário `order-timeout` → Confirmar compra → após 8 s aparece "Não recebemos a confirmação…" → "Tentar novamente" reenvia com a mesma `Idempotency-Key` e recupera o mesmo pedido. Recarregar a página oferece "Retomar pedido". |
-| Pagamento recusado | Cenário `payment-declined` → compra → tela "Pagamento recusado"; itens continuam no carrinho. |
-| Pedido pendente + refresh | Compra no cenário `default` e recarregue a página do pedido antes de confirmar (2,5 s): o estado é recuperado via REST, sem nova compra. |
-| Sessão expirada | Painel → "Expirar sessão" e faça qualquer ação privada (ou cenário `session-expired`): login com aviso e retorno ao ponto anterior; o rascunho do checkout é preservado. |
-| Favorito com falha | Cenário `favorite-fail` → favoritar: muda na hora, volta ao estado anterior e mostra erro. |
-| Carteira recusa | Cenário `wallet-reject` → Pagamento → Conectar. |
-| Lentidão / erro / retry | Cenários `slow`, `server-error`, `flaky`, `offline`. |
+- **Preço muda no checkout:** cenário `price-change` → Pagamento → Conectar → Revisar. A cotação fica desatualizada e só dá para seguir depois de "Atualizar cotação".
+- **Edição esgota:** igual, com `sold-out`. A revisão fecha e o carrinho pede para remover o item.
+- **Cotação velha no servidor:** com a revisão aberta, use "Derrubar socket" e "Esgotar 1/50" no painel e confirme. A API responde `409 QUOTE_STALE` com a nova cotação.
+- **Timeout e idempotência:** cenário `order-timeout` → confirmar. Após 8 s aparece "Tentar novamente", que reenvia com a mesma `Idempotency-Key` e recupera o mesmo pedido. Recarregar a página oferece "Retomar pedido".
+- **Pagamento recusado:** cenário `payment-declined`. Os itens continuam no carrinho.
+- **Pedido pendente:** recarregue a página do pedido antes da confirmação (2,5 s). O estado volta via REST, sem gerar outra compra.
+- **Sessão expirada:** "Expirar sessão" no painel e qualquer ação privada. O app pede login e volta para onde estava, com o rascunho do checkout preservado.
+- **Favorito falhando:** cenário `favorite-fail`. O coração muda na hora e volta com mensagem de erro.
+- **Carteira recusando:** cenário `wallet-reject` e "Conectar".
+- **Lentidão, erro e retry:** `slow`, `server-error`, `flaky` e `offline`.
 
-## Testes (Playwright)
+## Testes
 
-```bash
-npm test
-```
+`npm test` roda as specs em `e2e/` no Chromium, em desktop (1440) e mobile (390, specs marcadas com `@main`):
+- cobrem os 12 itens pedidos;
+- incluem regressão visual de início, detalhe, carrinho e pagamento (baselines em `e2e/__screenshots__`);
+- incluem varredura axe e checagem de overflow de 320 a 1440 px.
 
-- As 12 áreas exigidas em `e2e/*.spec.ts`: catálogo, detalhe, conta/sessão, favoritos, carrinho, compra, falhas de pagamento/idempotência, perfil/carteiras, tempo real, acessibilidade e skeletons/retry, além de `clock.spec.ts`.
-- Relógio controlado com `page.clock` nos cenários sensíveis a tempo: expiração de sessão, liquidação do pedido e debounce da busca. Como o MSW roda na página, os timers do app e dos mocks avançam juntos.
-- Projetos `desktop` (1440×900, todos os testes) e `mobile` (390×844, fluxos marcados `@main`), em Chromium.
-- Regressão visual de início, detalhe, carrinho e pagamento com baselines versionadas em `e2e/__screenshots__/`.
-- Cada teste roda em contexto novo (seed limpo). Latência, tempo de resolução de pedidos e disparo de eventos são controlados pelo teste via `/api/__mock/*`, que passa pelo MSW; eventos chegam pelo `socket.io-client`.
-- Relatório HTML em `playwright-report/`; traces, vídeo e screenshot das falhas em `test-results/`.
-
-Para rodar contra um servidor já aberto: `E2E_BASE_URL=http://127.0.0.1:5173 npx playwright test`.
+Cada teste começa com dados limpos. Latência, liquidação de pedidos e eventos são controlados via `/api/__mock/*`, ou seja, pelo próprio MSW e pelo socket.io-client. Os cenários sensíveis a tempo usam `page.clock`. O relatório HTML fica em `playwright-report/`, e traces e vídeos das falhas em `test-results/`.
 
 ## Lighthouse
 
@@ -130,28 +112,12 @@ Para rodar contra um servidor já aberto: `E2E_BASE_URL=http://127.0.0.1:5173 np
 npm run build && npm run lighthouse
 ```
 
-Três medições por página (início e detalhe) e perfil (mobile e desktop), com mediana. Saída em `lighthouse/reports/`: `summary.md`, `summary.json` (com ambiente e versões) e os relatórios HTML/JSON da execução mediana. Configuração versionada em `lighthouse/config.mjs`. Resultados e análise em [ARCHITECTURE.md](ARCHITECTURE.md#performance-e-lighthouse).
+Mede início e detalhe em mobile e desktop, três vezes cada, e salva a mediana. A config fica em `lighthouse/config.mjs`; relatórios HTML/JSON, versões e ambiente vão para `lighthouse/reports/`. A análise dos números está no ARCHITECTURE.
 
 ## Deploy
 
-O build de demonstração inclui os mocks. `vercel.json` (Vercel) e `public/_redirects` (Netlify/Cloudflare Pages) fazem o fallback de SPA para acesso direto e refresh de qualquer rota.
+O build de produção já inclui os mocks. O `vercel.json` e o `public/_redirects` (Netlify/Cloudflare) fazem o fallback de SPA para acesso direto e refresh de qualquer rota.
 
 ```bash
 npx vercel --prod
 ```
-
-## Estrutura
-
-```
-src/
-  api/          contratos (types.ts), cliente Axios (http.ts), endpoints e chaves de cache
-  features/     hooks de domínio (catálogo, carrinho, checkout, conta, auth) e componentes
-  pages/        telas roteadas
-  realtime/     cliente Socket.IO, deduplicação/versionamento e reconciliação
-  mocks/        MSW: banco simulado, fixtures, cenários, handlers REST, servidor Socket.IO
-  components/   layout, shadcn/ui e componentes compartilhados
-e2e/            Playwright (specs, fixtures, baselines visuais)
-lighthouse/     configuração, runner e relatórios
-assets/figma/   PNGs originais exportados do Figma
-```
-# jungle-kurio-test
