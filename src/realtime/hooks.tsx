@@ -27,7 +27,6 @@ export function useConnectionState() {
   return state
 }
 
-/** Anuncia (toast + aria-live) alterações recebidas para o NFT exibido. */
 export function useNftLiveNotice(id: string, name: string | undefined) {
   useEffect(
     () =>

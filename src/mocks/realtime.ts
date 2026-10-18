@@ -3,11 +3,7 @@ import { ws } from 'msw'
 import type { Nft, NftUpdatedEvent, Order, OrderUpdatedEvent, RealtimeEvent } from '@/api/types'
 import { db, nextEventSeq } from './db'
 
-/**
- * Servidor Socket.IO simulado via MSW (`ws`) + @mswjs/socket.io-binding.
- * O cliente real (`socket.io-client`) conecta em REALTIME_URL com transporte
- * WebSocket; o handshake Engine.IO/Socket.IO é respondido pelo binding.
- */
+// Servidor Socket.IO simulado: MSW ws + @mswjs/socket.io-binding.
 
 export const REALTIME_URL = (import.meta.env.VITE_REALTIME_URL as string | undefined) ?? 'wss://realtime.kurio.mock'
 
@@ -53,7 +49,7 @@ export const realtimeHandlers = [
 
     connection.client.addEventListener('message', (event) => {
       const raw = typeof event.data === 'string' ? event.data : ''
-      // Pacote CONNECT do Socket.IO com payload de autenticação: 40{"token":"..."}
+      // CONNECT com auth: 40{"token":"..."}
       if (raw.startsWith('40')) {
         try {
           const auth = JSON.parse(raw.slice(2) || '{}') as { token?: string }
@@ -64,7 +60,6 @@ export const realtimeHandlers = [
       }
     })
 
-    // O cliente informa troca de sessão sem reconectar o transporte.
     io.client.on('session', (_event, payload: { token?: string | null }) => {
       peer.userId = userFromToken(payload?.token)
     })
@@ -116,7 +111,6 @@ export function emitOrderUpdated(order: Order & { userId: string }) {
   return event
 }
 
-/** Reenvia o último evento (teste de duplicatas). */
 export function replayLastEvent() {
   const last = history.at(-1)
   if (!last) return null
@@ -124,7 +118,6 @@ export function replayLastEvent() {
   return last
 }
 
-/** Envia um evento com versão antiga para um NFT (teste de eventos obsoletos). */
 export function emitStaleNftEvent(nft: Nft, staleVersion: number, priceEth: string) {
   const event: NftUpdatedEvent = {
     eventId: `evt_stale_${nextEventSeq()}_${nft.id}`,
@@ -143,7 +136,6 @@ export function emitStaleNftEvent(nft: Nft, staleVersion: number, priceEth: stri
   return event
 }
 
-/** Derruba as conexões; novas conexões são recusadas durante `offlineMs`. */
 export function dropConnections(offlineMs = 0) {
   offlineUntil = Date.now() + offlineMs
   for (const peer of [...peers]) peer.close()

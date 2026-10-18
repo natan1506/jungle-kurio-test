@@ -1,6 +1,5 @@
 import { test as base, expect, type Page } from '@playwright/test'
 
-/** Configuração inicial dos mocks injetada antes do app carregar. */
 export interface MockSetup {
   scenario?: string
   latencyMs?: number | null
@@ -13,11 +12,7 @@ export const USERS = {
   bruno: { email: 'bruno@kurio.dev', password: 'Kurio@123', name: 'Bruno Lima' },
 }
 
-/**
- * Controle da simulação via endpoints MSW (`/api/__mock/*`), executados de
- * dentro da página: passam pelo service worker como qualquer chamada REST e os
- * eventos chegam ao app pelo socket.io-client.
- */
+// Chama /api/__mock/* de dentro da página, passando pelo MSW como o app.
 export class MockControl {
   private readonly page: Page
   constructor(page: Page) {
@@ -25,7 +20,6 @@ export class MockControl {
   }
 
   async call<T = unknown>(path: string, body: unknown = {}): Promise<T> {
-    // Garante que o MSW já controla a página antes de chamar o controle.
     await this.page.waitForFunction(() => document.documentElement.dataset.network === "ready")
     return this.page.evaluate(
       async ({ path, body }) => {
@@ -66,7 +60,7 @@ export const test = base.extend<{ mock: MockControl; mockSetup: MockSetup }>({
   mockSetup: [{ scenario: 'default', latencyMs: 0, orderResolveMs: 60_000, checkoutChangeDelayMs: 300 }, { option: true }],
   page: async ({ page, mockSetup }, use) => {
     await page.addInitScript((setup) => {
-      // Apenas na primeira carga: recargas preservam o estado do teste.
+      // só na primeira carga; reloads mantêm o estado do teste
       if (!sessionStorage.getItem('e2e.init')) {
         sessionStorage.setItem('e2e.init', '1')
         localStorage.setItem('kurio.mock.hidePanel', '1')
@@ -94,7 +88,7 @@ export async function login(page: Page, user: keyof typeof USERS = 'ana', from =
   await dialog.getByLabel('Senha', { exact: true }).fill(USERS[user].password)
   await dialog.getByRole('button', { name: 'Entrar', exact: true }).click()
   await expect(page.getByRole('dialog')).toBeHidden()
-  // Espera a navegação pós-login do app terminar antes de o teste navegar.
+  // espera o redirect pós-login antes de navegar
   await expect(page).not.toHaveURL(/\/entrar/)
   await page.waitForLoadState('networkidle')
   await expect(page.getByRole('button', { name: `Menu da conta de ${USERS[user].name}` }).or(page.getByRole('link', { name: 'Perfil' })).first()).toBeVisible()
@@ -108,7 +102,6 @@ export async function addToCart(page: Page, nftId: string, opts: { quantity?: nu
   await expect(page.getByText('adicionado ao carrinho').first()).toBeVisible()
 }
 
-/** Preenche o checkout (dados pré-carregados da carteira), conecta e abre a revisão. */
 export async function openReview(page: Page) {
   await page.goto('/checkout')
   await expect(page.getByLabel(/^Nome de exibição/)).toHaveValue(/.+/)

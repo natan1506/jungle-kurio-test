@@ -15,7 +15,6 @@ interface Props {
   priority?: boolean
 }
 
-/** Imagem responsiva (AVIF/WebP) com dimensões fixas para evitar CLS. */
 export function NftImage({ image, alt, sizes, className, priority }: Props) {
   return (
     <picture>

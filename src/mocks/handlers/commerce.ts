@@ -19,10 +19,7 @@ import { db, findNft, persist, randomId, type CartRecord, type OrderRecord } fro
 import { apiError, bearer, ETH_ADDRESS_RE, EMAIL_RE, readJson, requireUser, route } from '../http'
 import { mockConfig } from '../scenarios'
 
-/**
- * Resolve o carrinho da requisição: usuário autenticado usa o próprio
- * carrinho; visitante usa o carrinho anônimo identificado por `X-Cart-Id`.
- */
+// Usuário logado usa o próprio carrinho; visitante, o de X-Cart-Id.
 function resolveCart(request: Request): { cart: CartRecord } | { response: Response } {
   if (bearer(request)) {
     const auth = requireUser(request)
@@ -121,7 +118,6 @@ export const commerceHandlers = [
     return HttpResponse.json(cartView(r.cart))
   }),
 
-  /** Reconhece avisos de preço/quantidade exibidos ao usuário. */
   route('post', '/cart/ack', 'private', ({ request }) => {
     const r = resolveCart(request)
     if ('response' in r) return r.response
@@ -160,7 +156,6 @@ export const commerceHandlers = [
     return HttpResponse.json(cartView(r.cart))
   }),
 
-  /** Mescla o carrinho do visitante no carrinho do usuário após login/cadastro. */
   route('post', '/cart/merge', 'private', async ({ request }) => {
     const auth = requireUser(request)
     if ('response' in auth) return auth.response
@@ -245,7 +240,6 @@ export const commerceHandlers = [
       return HttpResponse.json<Order>(publicOrder(settleIfDue(order)), { status: 200 })
     }
 
-    // Validação dos dados do colecionador.
     const buyer = body.buyer
     const fieldErrors: Record<string, string> = {}
     if (!buyer?.displayName?.trim()) fieldErrors.displayName = 'Informe o nome de exibição.'

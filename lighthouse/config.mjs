@@ -1,8 +1,4 @@
-/**
- * Configuração versionada da auditoria Lighthouse.
- * Perfis: mobile (padrão do Lighthouse: Moto G Power, 4G lento, CPU 4x)
- * e desktop (preset oficial desktop, throttling de cabo).
- */
+// mobile = padrão do Lighthouse (Moto G Power, 4G lento, CPU 4x); desktop = preset oficial.
 import desktopConfig from 'lighthouse/core/config/desktop-config.js'
 
 export const PAGES = [

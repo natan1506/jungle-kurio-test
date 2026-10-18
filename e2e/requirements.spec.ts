@@ -1,11 +1,10 @@
 import { addToCart, expect, gotoApp, login, openReview, test, USERS } from './fixtures'
 
-/** Requisitos transversais do enunciado não cobertos pelos fluxos principais. */
 
 test.describe('Responsividade e zoom', () => {
   const PUBLIC = ['/', '/nft/emerald-ape-042', '/carrinho', '/entrar', '/cadastro', '/rota-inexistente']
   const PRIVATE = ['/conta/perfil', '/conta/carteiras', '/checkout']
-  // 320 px equivale a 400% de zoom em 1280 px (reflow WCAG 1.4.10).
+  // 320 px = zoom de 400% (WCAG 1.4.10)
   const WIDTHS = [320, 390, 768, 1440]
 
   test('sem overflow horizontal em 320/390/768/1440', async ({ page }) => {
@@ -61,7 +60,7 @@ test.describe('Isolamento entre usuários', () => {
 
     await gotoApp(page, `/pedidos/${orderId}`)
     await expect(page.getByRole('heading', { name: 'Acesso negado' })).toBeVisible()
-    // O pedido da Ana é liquidado: o evento não pode afetar a sessão do Bruno.
+    // pedido da Ana liquidado não pode afetar o Bruno
     await mock.resolveOrder(orderId, 'confirmed')
     await page.waitForTimeout(500)
     await expect(page.getByTestId('receipt')).toHaveCount(0)
@@ -118,7 +117,7 @@ test.describe('Reconexão com pedido pendente', () => {
     await mock.resolveOrder(orderId, 'confirmed') // evento perdido: socket fora
     await expect(page.getByText('Tempo real desconectado. Reconectando…')).toBeHidden({ timeout: 10_000 })
     await expect(page.getByTestId('receipt')).toBeVisible()
-    // Estado terminal: reenviar eventos não altera o recibo.
+    // estado terminal: evento repetido não muda nada
     const total = await page.getByTestId('receipt-total').textContent()
     await mock.replayLastEvent()
     await expect(page.getByTestId('receipt-total')).toHaveText(total!)

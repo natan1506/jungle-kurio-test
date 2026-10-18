@@ -3,10 +3,7 @@ import { api } from '@/api/endpoints'
 import type { Cart, LoginInput, RegisterInput, Session } from '@/api/types'
 import { guestCartId, rotateGuestCartId, sessionStore } from '@/lib/session-store'
 
-/**
- * Após autenticar, preserva os itens do visitante mesclando-os no carrinho do
- * usuário ANTES de publicar a sessão: a UI nunca vê um carrinho intermediário.
- */
+// Mescla o carrinho do visitante antes de publicar a sessão.
 async function establishSession(session: Session, queryClient: ReturnType<typeof useQueryClient>) {
   const guestId = guestCartId()
   let cart: Cart | null = null
@@ -39,7 +36,7 @@ export function useRegister() {
 
 export function useLogout() {
   return useMutation({
-    // Encerra localmente na hora (limpa cache e socket); a revogação na API é best-effort.
+    // Logout local imediato; revogar na API é best-effort.
     mutationFn: async () => {
       const token = sessionStore.token()
       sessionStore.clear("logout")

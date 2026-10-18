@@ -5,7 +5,6 @@ import type { ApiErrorBody, ApiErrorCode } from './types'
 
 export const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api'
 
-/** Erro normalizado da API (inclui falhas de rede e timeout). */
 export class ApiError extends Error {
   readonly status: number
   readonly code: ApiErrorCode | 'NETWORK_ERROR' | 'TIMEOUT' | 'CANCELED'
@@ -27,7 +26,6 @@ export class ApiError extends Error {
     this.details = opts.details
   }
 
-  /** Falhas transitórias que podem ser repetidas com segurança. */
   get isTransient() {
     return this.code === 'NETWORK_ERROR' || this.code === 'TIMEOUT' || this.status >= 500 || this.status === 429
   }
@@ -73,8 +71,7 @@ http.interceptors.response.use(
       fieldErrors: body?.fieldErrors,
       details: body?.details,
     })
-    // Sessão expirada/inválida: encerra a sessão local; as rotas privadas
-    // redirecionam para o login preservando o destino.
+    // 401: encerra a sessão; rotas privadas levam ao login guardando o destino.
     if (error.response.status === 401 && sessionStore.token() && error.config?.headers?.Authorization) {
       sessionStore.clear(apiError.code === 'SESSION_EXPIRED' ? 'expired' : 'logout')
     }

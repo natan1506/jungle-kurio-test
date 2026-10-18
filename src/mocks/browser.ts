@@ -20,7 +20,6 @@ export async function startMocks() {
     ...commerceHandlers,
     ...accountHandlers,
     ...realtimeHandlers,
-    // Assets estáticos seguem direto para a rede.
     http.get(/\.(avif|webp|png|svg|woff2?|js|css)$/, () => passthrough()),
   )
   await worker.start({

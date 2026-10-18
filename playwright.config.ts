@@ -3,10 +3,6 @@ import { defineConfig, devices } from '@playwright/test'
 const PORT = Number(process.env.E2E_PORT ?? 4173)
 const BASE_URL = process.env.E2E_BASE_URL ?? `http://127.0.0.1:${PORT}`
 
-/**
- * E2E com os mocks MSW (REST + Socket.IO) no build de demonstração.
- * Cada teste roda em um contexto novo (localStorage vazio = seed limpo).
- */
 export default defineConfig({
   testDir: './e2e',
   outputDir: './test-results',
@@ -18,7 +14,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  // Cada página roda o MSW completo (REST + socket); paralelismo alto gera disputa de CPU.
+  // cada página roda o MSW inteiro; mais workers só disputam CPU
   workers: process.env.CI ? 2 : 6,
   reporter: [['html', { outputFolder: 'playwright-report', open: 'never' }], ['list']],
   snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',

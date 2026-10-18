@@ -1,11 +1,7 @@
 import type { Nft, Order, Quote, User, Wallet } from '@/api/types'
 import { buildNfts, SEED_USERS, seedWallets } from './fixtures'
 
-/**
- * "Banco" da API simulada. Mantém estado consistente entre catálogo,
- * favoritos, carrinho, perfil, carteiras e pedidos e persiste no
- * localStorage para sobreviver a refresh. `resetDb()` restaura o seed.
- */
+// Estado da API simulada, persistido no localStorage.
 
 export interface UserRecord extends User {
   passwordHash: string
@@ -25,7 +21,7 @@ export interface CartItemRecord {
   nftId: string
   editionId: string
   quantity: number
-  /** Último preço/quantidade reconhecidos pelo usuário (para avisos). */
+  // Último preço/quantidade vistos pelo usuário (gera os avisos).
   seenUnitPriceEth: string
   seenQuantity: number
 }

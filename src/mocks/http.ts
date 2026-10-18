@@ -39,10 +39,6 @@ export function resetNetworkState() {
   requestCounter = 0
 }
 
-/**
- * Aplica latência e falhas do cenário ativo. Retorna uma resposta quando a
- * requisição deve falhar; `undefined` para seguir para o handler.
- */
 async function gate(request: Request, kind: RouteKind): Promise<Response | undefined> {
   if (kind === 'control') return undefined
   const { scenario, latencyMs } = mockConfig.current
@@ -55,7 +51,7 @@ async function gate(request: Request, kind: RouteKind): Promise<Response | undef
     if (fault.times <= 0) faults.splice(faults.indexOf(fault), 1)
     if (fault.delayMs) await delay(fault.delayMs)
     if (fault.networkError) return HttpResponse.error()
-    // status < 400: apenas atrasa a resposta (respostas fora de ordem).
+    // status < 400 só atrasa (respostas fora de ordem).
     if (fault.status < 400) return undefined
     return apiError(fault.status, fault.code, 'Falha simulada pelo cenário de testes.')
   }

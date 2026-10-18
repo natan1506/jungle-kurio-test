@@ -48,7 +48,6 @@ export function summarize(lineTotals: Big[], coupon: Coupon | null, network: Net
   }
 }
 
-/** Monta a visão do carrinho com preços/disponibilidade atuais e avisos. */
 export function cartView(cart: CartRecord): Cart {
   let mutated = false
   const items: CartItem[] = []
@@ -217,7 +216,7 @@ export function resetCommerceRuntime() {
   orderTimers.clear()
 }
 
-/** Cenários "price-change"/"sold-out": altera o primeiro item enquanto o usuário revisa. */
+// price-change/sold-out: altera o 1º item enquanto o usuário revisa.
 export function maybeTriggerCheckoutScenario(quote: QuoteRecord) {
   const { scenario, checkoutChangeDelayMs } = mockConfig.current
   if (checkoutScenarioFired || !quote.lines.length) return
@@ -314,7 +313,7 @@ export function schedulePendingOrders() {
   for (const order of db.state.orders) scheduleOrder(order)
 }
 
-/** Resolução preguiçosa: garante consistência após refresh mesmo sem timers. */
+// Resolve pendências vencidas mesmo sem timer (ex.: após refresh).
 export function settleIfDue(order: OrderRecord) {
   if (order.status === 'pending' && order.resolveAt <= Date.now() && !orderTimers.has(order.id)) {
     resolveOrder(order)

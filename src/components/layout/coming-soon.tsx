@@ -1,10 +1,7 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
-/**
- * Itens fora do escopo da entrega: visíveis como no Figma, mas sem aparentar
- * sucesso funcional (aria-disabled + aviso "Em breve").
- */
+// Fora do escopo: aparece como no Figma, mas desabilitado.
 export function ComingSoon({ label, className }: { label: string; className?: string }) {
   return (
     <Tooltip>

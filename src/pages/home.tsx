@@ -24,7 +24,6 @@ function Hero() {
   const next = slides[(index + 1) % Math.max(1, slides.length)]
   return (
     <section aria-labelledby="hero-title" className="container-page pt-2 pb-6 md:py-14">
-      {/* Mobile: card compacto do Figma. Desktop: texto + arte grande. Um único layout responsivo. */}
       <div className="relative grid grid-cols-[1fr_42%] items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-[#4a3326] via-[#33251d] to-card p-4 md:grid-cols-[1.1fr_1fr] md:gap-8 md:rounded-none md:bg-none md:p-0">
         <div className="flex flex-col gap-2 md:gap-5">
           <p className="text-[11px] text-muted-foreground md:text-sm">Bem-vindo à Kurio</p>
@@ -180,9 +179,8 @@ function activeFilterCount(s: CatalogSearch) {
   return (s.categories?.length ?? 0) + (s.networks?.length ?? 0) + (s.priceMin || s.priceMax ? 1 : 0)
 }
 
-/** Estado do catálogo (URL + query), compartilhado pela barra mobile e pela grade. */
 function useCatalogController() {
-  // strict: false permite renderizar o catálogo sob as rotas de login/cadastro.
+  // strict: false porque o catálogo também aparece atrás do login.
   const raw = useSearch({ strict: false })
   const search = useMemo(() => catalogSearchSchema.parse(raw), [raw])
   const navigate = useNavigate()
@@ -192,7 +190,7 @@ function useCatalogController() {
   const [sheetOpen, setSheetOpen] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
 
-  // Qualquer mudança de filtro reinicia a paginação.
+  // Mudar filtro volta para a página 1.
   const update = (patch: Partial<CatalogSearch>, opts: { replace?: boolean } = {}) =>
     navigate({ to: '/', search: (prev: CatalogSearch) => ({ ...prev, ...patch, page: undefined }), replace: opts.replace, resetScroll: false })
 
@@ -232,7 +230,6 @@ function FilterSheet({ ctl }: { ctl: CatalogController }) {
   )
 }
 
-/** Topo da home mobile (Figma): busca + filtros, sem cabeçalho com logo. */
 function MobileSearchBar({ ctl }: { ctl: CatalogController }) {
   return (
     <div className="container-page sticky top-0 z-30 flex items-center gap-2 bg-background/95 py-3 backdrop-blur md:hidden">
@@ -312,7 +309,6 @@ function Catalog({ ctl }: { ctl: CatalogController }) {
           <p className="sr-only" aria-live="polite">
             {data && !query.isFetching ? `${data.total} NFTs encontrados. Página ${data.page} de ${data.totalPages}.` : ''}
           </p>
-          {/* Atualização em segundo plano (refetch com dados já exibidos). */}
           {data && query.isFetching && !showSkeleton && (
             <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground" data-testid="catalog-refreshing">
               <Loader2 className="size-3 animate-spin" aria-hidden /> Atualizando resultados…

@@ -12,11 +12,7 @@ interface MockState {
   scenarios: Record<string, string>
 }
 
-/**
- * Painel de demonstração: seleciona cenários, reseta dados e dispara eventos.
- * Toda interação passa pelos endpoints de controle do MSW (`/api/__mock/*`);
- * eventos chegam ao app pelo socket.io-client, nunca direto na UI.
- */
+// Tudo passa por /api/__mock; eventos chegam pelo socket, nunca direto na UI.
 export function MockPanel() {
   const [state, setState] = useState<MockState | null>(null)
   const [open, setOpen] = useState(false)

@@ -6,7 +6,6 @@ import { useSession } from '@/lib/session-store'
 const item =
   'flex flex-1 flex-col items-center gap-0.5 py-3 text-[10px] text-muted-foreground data-[status=active]:text-highlight'
 
-/** Navegação inferior do frame mobile do Figma (botão central elevado). */
 export function MobileTabBar() {
   const session = useSession()
   const cart = useCart()

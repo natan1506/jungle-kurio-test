@@ -16,11 +16,7 @@ const MockPanel = lazy(() => import('@/components/mock-panel').then((m) => ({ de
 
 export const PRIVATE_PREFIXES = ['/checkout', '/conta', '/pedidos']
 
-/**
- * Encerramento de sessão (logout, expiração, troca de usuário): limpa todos os
- * dados privados do cache. Em rotas privadas, redireciona ao login preservando
- * o destino para retomada.
- */
+// Fim de sessão: limpa o cache do usuário e, em rota privada, volta ao login.
 function SessionWatcher() {
   const queryClient = useQueryClient()
   const router = useRouter()
@@ -98,7 +94,6 @@ export function RootLayout() {
   )
 }
 
-/** Permite ocultar o botão de mocks (ex.: E2E/regressão visual) via localStorage. */
 function hideMockPanel() {
   try {
     return localStorage.getItem('kurio.mock.hidePanel') === '1'

@@ -4,10 +4,7 @@ import { CATEGORIES, NETWORKS } from '@/api/types'
 import { toEthString } from '@/lib/money'
 import { seededRandom } from './scenarios'
 
-/**
- * Fixtures determinísticas: 60 NFTs (variedade para filtros/paginação),
- * 2 usuários e carteiras. Os 8 primeiros NFTs reproduzem os do Figma.
- */
+// 60 NFTs determinísticos; os 8 primeiros são os do Figma.
 
 const FIGMA_NFTS: { name: string; num: string; image: ImageKey; price: string; prev?: string; badge?: 'drop' }[] = [
   { name: 'Emerald Ape', num: '042', image: 'emerald-ape', price: '1.19' },
@@ -47,7 +44,7 @@ function makeEditions(base: Big, rnd: () => number, nftIndex: number): Edition[]
     { id: 'e50', label: '1/50', supply: 50, available: 6 + pick(20), maxPerOrder: 10, priceEth: toEthString(base) },
     { id: 'open', label: 'ABERTA', supply: null, available: 999, maxPerOrder: 10, priceEth: toEthString(base.times('0.6')) },
   ]
-  // Garante edições esgotadas para exercitar "edição indisponível".
+  // Algumas edições esgotadas de propósito.
   if (nftIndex % 3 === 0) editions[0].available = 0
   return editions
 }
@@ -117,7 +114,7 @@ export function buildNfts(): Nft[] {
       createdAt: new Date(baseDate - i * 36e5 * 7).toISOString(),
     })
   }
-  // Emerald Ape #042: edição 1/50 com estoque conhecido para testes.
+  // Emerald Ape #042 com estoque fixo (usado nos testes).
   const emerald = nfts[0]
   emerald.rating = 4.8
   emerald.reviewsCount = 19
@@ -141,7 +138,7 @@ export interface SeedUser {
   walletNickname: string
 }
 
-/** Credenciais fictícias (documentadas no README). Senhas são salvas com hash. */
+// Credenciais do README; no banco só fica o hash.
 export const SEED_USERS: SeedUser[] = [
   {
     id: 'u_ana',

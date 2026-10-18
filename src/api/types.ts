@@ -1,8 +1,3 @@
-/**
- * Contratos REST e de eventos compartilhados entre o cliente (Axios/Query),
- * a interface e a camada de mocks (MSW). Valores em ETH trafegam como strings
- * decimais; quantidades são inteiras.
- */
 
 export type EthAmount = string
 
@@ -173,7 +168,6 @@ export interface Wallet {
   network: NetworkKey
   profileName: string
   address: string
-  /** ENS ou endereço secundário (opcional). */
   secondaryAddress: string
   ensName: string
   walletType: WalletType
@@ -198,7 +192,6 @@ export interface CartItem {
   lineTotalEth: EthAmount
   available: number
   maxPerOrder: number
-  /** Alterações detectadas desde que o item foi adicionado/visto. */
   notices: CartNotice[]
 }
 
@@ -330,7 +323,6 @@ export interface ApiErrorBody {
     code: ApiErrorCode
     message: string
     fieldErrors?: Record<string, string>
-    /** Dados adicionais (ex.: nova cotação em QUOTE_STALE). */
     details?: unknown
   }
 }
@@ -343,11 +335,9 @@ export interface QuoteStaleDetails {
 /* ---------- Eventos em tempo real (Socket.IO) ---------- */
 
 export interface RealtimeEnvelope<TType extends string, TResource extends string, TData> {
-  /** Identidade estável do evento (deduplicação). */
   eventId: string
   type: TType
   resource: { type: TResource; id: string }
-  /** Versão monotônica do recurso após o evento. */
   version: number
   occurredAt: string
   data: TData

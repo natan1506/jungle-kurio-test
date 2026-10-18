@@ -156,7 +156,6 @@ export const accountHandlers = [
     }),
   ),
 
-  /** Simula a conexão com a extensão da carteira (aprovação ou recusa). */
   route<{ id: string }>('post', '/me/wallets/:id/connect', 'private', async ({ request, params }) =>
     withUser(request, async (user) => {
       const wallet = user.wallets.find((w) => w.id === params.id)

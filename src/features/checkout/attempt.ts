@@ -1,8 +1,4 @@
-/**
- * Tentativa de pedido persistida em sessionStorage: garante que cliques
- * repetidos, reenvios após timeout e refresh reutilizem a MESMA chave de
- * idempotência para a mesma cotação/carteira/rede.
- */
+// Mesma tentativa => mesma Idempotency-Key, inclusive após refresh.
 export interface OrderAttempt {
   key: string
   quoteId: string

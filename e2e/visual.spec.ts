@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test'
 import { addToCart, expect, login, test } from './fixtures'
 
-/** Regressão visual com dados determinísticos (seed fixo, latência 0). */
 async function settle(page: Page) {
   await page.evaluate(() => document.fonts.ready)
   await page.waitForLoadState('networkidle')

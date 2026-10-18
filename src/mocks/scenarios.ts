@@ -1,9 +1,4 @@
-/**
- * Cenários determinísticos da API simulada. Selecionáveis por:
- *  - query string `?scenario=<nome>` (persistido no localStorage);
- *  - painel de mocks na interface (botão "Mocks");
- *  - endpoint de controle `POST /api/__mock/scenario`.
- */
+// Cenário via ?scenario=, painel de mocks ou POST /api/__mock/scenario.
 
 export const SCENARIOS = {
   default: 'Sucesso (padrão)',
@@ -78,7 +73,6 @@ export function setConfig(patch: Partial<MockConfig>) {
   return mockConfig.current
 }
 
-/** PRNG determinístico (mulberry32) usado em fixtures e latência variável. */
 export function seededRandom(seed: number) {
   let a = seed >>> 0
   return () => {

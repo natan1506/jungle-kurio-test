@@ -5,7 +5,6 @@ import { isApiError } from '@/api/http'
 import type { Cart } from '@/api/types'
 import { guestCartId, useSession } from '@/lib/session-store'
 
-/** Usuário: ['user', id, 'cart'] (limpo no logout). Visitante: ['cart', guestId]. */
 export function useCartKey() {
   const session = useSession()
   return session ? (['user', session.user.id, 'cart'] as const) : (['cart', guestCartId()] as const)
@@ -34,7 +33,6 @@ function useCartMutation<TVars>(fn: (vars: TVars) => Promise<Cart>, opts: { succ
       if (isApiError(error) && (error.code === 'COUPON_INVALID' || error.code === 'COUPON_EXPIRED')) return
       if (isApiError(error) && error.status === 401) return
       toast.error(isApiError(error) ? error.message : 'Não foi possível atualizar o carrinho.')
-      // Reconciliação com o servidor após conflito de disponibilidade.
       void queryClient.invalidateQueries({ queryKey: key })
     },
   })
@@ -47,7 +45,6 @@ export function useAddToCart() {
   )
 }
 
-/** Alteração de quantidade com atualização otimista e rollback. */
 export function useUpdateCartItem() {
   const queryClient = useQueryClient()
   const key = useCartKey()

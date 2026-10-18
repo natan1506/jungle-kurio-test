@@ -8,11 +8,10 @@ import { useSession } from '@/lib/session-store'
 export function useCatalog(params: NftListParams) {
   const session = useSession()
   return useQuery({
-    // Favoritos dependem do usuário: a chave inclui o id para isolar o cache.
+    // Favoritos variam por usuário.
     queryKey: params.favoritesOnly ? [...qk.catalog(params), session?.user.id ?? 'anon'] : qk.catalog(params),
     enabled: !params.favoritesOnly || !!session,
-    // O AbortSignal cancela a requisição anterior; respostas obsoletas
-    // (fora de ordem) nunca sobrescrevem a chave atual.
+    // O signal cancela a busca anterior; resposta antiga nunca sobrescreve a atual.
     queryFn: ({ signal }) => api.catalog.list(params, { signal }),
     placeholderData: keepPreviousData,
   })
@@ -36,7 +35,6 @@ export function useFavorites() {
   })
 }
 
-/** Favoritar com atualização otimista e rollback em caso de falha. */
 export function useToggleFavorite() {
   const session = useSession()
   const queryClient = useQueryClient()

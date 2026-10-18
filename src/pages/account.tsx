@@ -261,7 +261,6 @@ function emptyWallet(slot: Wallet['slot']): WalletInput {
 
 function WalletForm({ initial, id, slot, onSaved }: { initial: WalletInput; id?: string; slot: Wallet['slot']; onSaved?: () => void }) {
   const save = useSaveWallet()
-  // O pai remonta o formulário (via key) quando a carteira muda; não há sincronização em efeito.
   const [form, setForm] = useState<WalletInput>(initial)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const set = <K extends keyof WalletInput>(k: K, v: WalletInput[K]) => {

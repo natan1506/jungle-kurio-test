@@ -1,10 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import type { Session, User } from '@/api/types'
 
-/**
- * Sessão do colecionador persistida no localStorage (recuperável após
- * refresh). Somente o token opaco e dados públicos do usuário são guardados.
- */
 
 const SESSION_KEY = 'kurio.session'
 const GUEST_CART_KEY = 'kurio.guestCartId'
@@ -74,7 +70,7 @@ export const sessionStore = {
   },
 }
 
-// Mantém abas sincronizadas (logout/troca de usuário em outra aba).
+// Sincroniza logout/troca de usuário entre abas.
 if (typeof window !== 'undefined') {
   window.addEventListener('storage', (e) => {
     if (e.key !== SESSION_KEY) return

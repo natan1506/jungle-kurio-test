@@ -5,7 +5,6 @@ import { RootLayout } from '@/components/layout/root-layout'
 import { Button } from '@/components/ui/button'
 import { catalogSearchSchema, type CatalogSearch } from "@/features/catalog/search"
 import { sessionStore } from '@/lib/session-store'
-// Code-splitting por rota: cada tela vira um chunk carregado sob demanda.
 const HomePage = lazyRouteComponent(() => import('@/pages/home'), 'HomePage')
 const NftDetailPage = lazyRouteComponent(() => import('@/pages/nft-detail'), 'NftDetailPage')
 const CartPage = lazyRouteComponent(() => import('@/pages/cart'), 'CartPage')
@@ -38,7 +37,6 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
   notFoundComponent: NotFound,
 })
 
-/** Proteção das rotas privadas: sem sessão, vai ao login guardando o destino. */
 function requireAuth({ location }: { location: { href: string } }) {
   if (!sessionStore.get()) {
     throw redirect({ to: '/entrar', search: { redirect: location.href, reason: undefined } })

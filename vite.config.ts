@@ -3,13 +3,12 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: [
       { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
-      // Remove a lista de sufixos públicos (~185 kB) puxada pelo tough-cookie do MSW.
+      // tough-cookie (MSW) puxa a lista de sufixos públicos inteira; ver src/mocks/shims
       { find: /^tldts$/, replacement: fileURLToPath(new URL('./src/mocks/shims/tldts.ts', import.meta.url)) },
     ],
   },

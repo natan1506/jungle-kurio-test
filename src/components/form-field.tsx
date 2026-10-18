@@ -11,7 +11,6 @@ interface Props {
   children: (props: { id: string; 'aria-invalid'?: boolean; 'aria-describedby'?: string; 'aria-required'?: boolean }) => ReactNode
 }
 
-/** Campo com label, dica e erro associados via aria-describedby. */
 export function FormField({ label, required, error, hint, className, children }: Props) {
   const id = useId()
   const errorId = `${id}-error`

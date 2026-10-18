@@ -14,7 +14,6 @@ import { useRealtime } from '@/realtime/hooks'
 
 const route = getRouteApi('/pedidos/$orderId')
 
-/** Explorador de blocos por rede (referências simuladas). */
 const EXPLORER_NAMES = { ethereum: 'Etherscan', polygon: 'Polygonscan', solana: 'Solscan' } as const
 
 function Receipt({ order }: { order: Order }) {
@@ -138,7 +137,7 @@ export function OrderPage() {
   const query = useQuery({
     queryKey: qk.order(session.user.id, orderId),
     queryFn: ({ signal }) => api.orders.get(orderId, { signal }),
-    // Fallback caso o socket esteja indisponível: pedidos pendentes são consultados periodicamente.
+    // Polling de segurança caso o socket esteja fora.
     refetchInterval: (q) => (q.state.data?.status === 'pending' ? 5000 : false),
   })
 

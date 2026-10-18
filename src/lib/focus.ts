@@ -1,7 +1,4 @@
-/**
- * Após validar (cliente ou API), leva o foco ao primeiro campo inválido do
- * formulário. Dois frames garantem que o React já aplicou aria-invalid.
- */
+// Dois frames para o React já ter aplicado aria-invalid.
 export function focusFirstInvalid(form: HTMLFormElement | null) {
   requestAnimationFrame(() =>
     requestAnimationFrame(() => {

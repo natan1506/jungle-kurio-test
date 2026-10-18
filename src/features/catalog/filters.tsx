@@ -27,7 +27,7 @@ export function CatalogFilters({ search, facets, priceRange, onChange, idPrefix 
   const [max, setMax] = useState(search.priceMax ?? '')
   const [priceError, setPriceError] = useState<string | null>(null)
 
-  // Sincroniza com a URL (ex.: voltar no histórico) ajustando o estado no render.
+  // Acompanha a URL (ex.: voltar no histórico).
   const urlRange = `${search.priceMin ?? ''}|${search.priceMax ?? ''}`
   const [syncedRange, setSyncedRange] = useState(urlRange)
   if (syncedRange !== urlRange) {

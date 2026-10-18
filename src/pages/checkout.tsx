@@ -102,20 +102,19 @@ export function CheckoutPage() {
   const [resumable] = useState(() => loadAttempt(userId))
   const [formOpen, setFormOpen] = useState(false)
 
-  // Padrões derivados: carteira principal selecionada e formulário pré-preenchido
-  // por ela (ou o rascunho restaurado), sem sincronizar estado em efeitos.
+  // Carteira principal e formulário derivados (ou rascunho salvo).
   const primary = wallets.data?.find((w) => w.slot === 'primary') ?? wallets.data?.[0]
   const walletId = walletIdState ?? primary?.id ?? null
   const defaultForm = primary ? fromWallet(primary, session.user) : null
   const form = formState ?? defaultForm
   const setForm = (update: (f: BuyerInfo | null) => BuyerInfo | null) => setFormState((prev) => update(prev ?? defaultForm))
 
-  // Rascunho preservado para retomada (ex.: sessão expirada no checkout).
+  // Rascunho para retomar após expirar a sessão.
   useEffect(() => {
     if (form) saveDraft(userId, form)
   }, [form, userId])
 
-  // Alterações em tempo real durante a revisão invalidam a cotação.
+  // nft.updated durante a revisão invalida a cotação.
   useEffect(
     () =>
       realtimeBus.on('nft.applied', (e) => {
@@ -164,7 +163,6 @@ export function CheckoutPage() {
     mutationFn: (network: NetworkKey) => api.checkout.quote(network),
     onSuccess: (q, _n) => {
       if (quote) {
-        // Nova cotação após mudança: compara e exige nova confirmação.
         const diff: QuoteChange[] = []
         for (const l of quote.lines) {
           const now = q.lines.find((x) => x.cartItemId === l.cartItemId)
@@ -181,8 +179,7 @@ export function CheckoutPage() {
       setReviewOpen(true)
     },
     onError: (e) => {
-      // Sem itens disponíveis (ex.: edição esgotou durante a revisão): fecha a
-      // revisão, reconcilia o carrinho e orienta o usuário a revisá-lo.
+      // Nada disponível (ex.: esgotou na revisão): fecha e manda revisar o carrinho.
       if (isApiError(e) && e.status === 422) {
         setReviewOpen(false)
         setQuote(null)
@@ -198,8 +195,7 @@ export function CheckoutPage() {
     },
   })
 
-  // Trava síncrona contra clique duplo: o estado isPending só desabilita o botão
-  // no próximo render; o ref barra o segundo envio imediatamente.
+  // isPending só desabilita no próximo render; o ref barra o clique duplo na hora.
   const submitting = useRef(false)
   const placeOrder = useMutation({
     onSettled: () => {
@@ -334,7 +330,6 @@ export function CheckoutPage() {
             <h2 id="buyer-title" className="text-base font-semibold">
               Perfil do colecionador
             </h2>
-            {/* No mobile (Figma "Pagamento com carteira") os dados vêm pré-preenchidos e ficam recolhidos. */}
             <Button type="button" variant="link" size="sm" className="md:hidden" aria-expanded={formOpen} aria-controls="checkout-form" onClick={() => setFormOpen((o) => !o)}>
               {formOpen ? "Ocultar dados" : "Revisar dados"}
             </Button>

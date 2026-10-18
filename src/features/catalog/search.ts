@@ -21,7 +21,6 @@ const price = z
     return s && /^\d+(\.\d+)?$/.test(s) ? s : undefined
   })
 
-/** Estado do catálogo na URL: sobrevive a refresh e navegação do histórico. */
 export const catalogSearchSchema = z.object({
   q: z
     .string()

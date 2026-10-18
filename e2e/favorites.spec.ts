@@ -18,9 +18,9 @@ test.describe('Favoritos', () => {
     await page.goto('/nft/ivory-baron-088')
     await mock.fault({ method: 'PUT', path: '/me/favorites', status: 500, code: 'INTERNAL_ERROR', times: 1, delayMs: 400 })
     await page.getByRole('button', { name: 'Favoritar Ivory Baron #088' }).click()
-    // Otimista: muda imediatamente…
+    // otimista
     await expect(page.getByRole('button', { name: 'Remover Ivory Baron #088 dos favoritos' })).toBeVisible()
-    // …e volta após a falha, com feedback.
+    // rollback após a falha
     await expect(page.getByText('Não foi possível favoritar Ivory Baron #088.')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Favoritar Ivory Baron #088' })).toHaveAttribute('aria-pressed', 'false')
     await page.getByRole('button', { name: 'Favoritar Ivory Baron #088' }).click()

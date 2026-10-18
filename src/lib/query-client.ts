@@ -1,13 +1,7 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { isApiError } from '@/api/http'
 
-/**
- * Política de cache/retry:
- *  - queries repetem até 2x apenas falhas transitórias (rede, timeout, 5xx);
- *    4xx nunca são repetidos;
- *  - mutations não repetem automaticamente (operações não idempotentes);
- *    a criação de pedido tem retry explícito com a mesma chave de idempotência.
- */
+// Retry só em falha transitória; mutations nunca repetem sozinhas.
 export function createQueryClient() {
   return new QueryClient({
     queryCache: new QueryCache(),

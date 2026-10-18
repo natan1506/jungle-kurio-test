@@ -1,5 +1,4 @@
-// Executa a auditoria Lighthouse no build otimizado (vite preview) com o
-// cenário padrão dos mocks. Uso: npm run build && npm run lighthouse
+// Uso: npm run build && npm run lighthouse
 import { spawn } from 'node:child_process'
 import { mkdir, writeFile } from 'node:fs/promises'
 import os from 'node:os'
@@ -43,7 +42,7 @@ try {
       for (const [profile, config] of Object.entries(PROFILES)) {
         const runs = []
         for (let i = 0; i < RUNS; i++) {
-          // Chrome novo por medição: isola cache/SW entre execuções e evita quedas.
+          // Chrome novo a cada medição (sem cache/SW da anterior)
           const chrome = await chromeLauncher.launch({ chromePath, chromeFlags: ['--headless=new', '--no-sandbox'] })
           let result
           try {
@@ -62,7 +61,7 @@ try {
           })
           console.log(`${page.name}/${profile} #${i + 1}:`, runs.at(-1).scores)
         }
-        // Relatório da execução mediana (pela performance).
+        // salva o relatório da medição mediana
         const perfMedian = median(runs.map((r) => r.scores.performance))
         const chosen = runs.find((r) => r.scores.performance === perfMedian)
         const base = `${OUT}${page.name}-${profile}`
@@ -96,14 +95,14 @@ try {
 
   const rows = summary.map(
     (s) =>
-      `| ${s.page} | ${s.profile} | ${CATEGORIES.map((c) => `${s.median[c]}${s.median[c] < TARGETS[c] ? ' ⚠️' : ''}`).join(' | ')} | ${s.lcpMs} ms | ${s.cls} | ${s.tbtMs} ms |`,
+      `| ${s.page} | ${s.profile} | ${CATEGORIES.map((c) => `${s.median[c]}${s.median[c] < TARGETS[c] ? '*' : ''}`).join(' | ')} | ${s.lcpMs} ms | ${s.cls} | ${s.tbtMs} ms |`,
   )
   const md = [
     '# Auditoria Lighthouse',
     '',
     `Gerado em ${env.date} · Lighthouse ${env.lighthouse} · Node ${env.node} · ${env.os} · ${env.cpu}`,
     '',
-    `Mediana de ${RUNS} execuções por página e perfil. ⚠️ = abaixo da meta.`,
+    `Mediana de ${RUNS} execuções por página e perfil. Valores com asterisco estão abaixo da meta.`,
     '',
     '| Página | Perfil | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |',
     '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',

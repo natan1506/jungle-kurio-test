@@ -95,10 +95,7 @@ export const api = {
   },
 }
 
-/**
- * Chaves de cache. Dados privados ficam sob ['user', userId, ...] para
- * isolamento por usuário e limpeza total no logout/troca de conta.
- */
+// Dados privados ficam sob ['user', id] para limpar tudo no logout.
 export const qk = {
   catalog: (p: NftListParams) => ['catalog', 'list', p] as const,
   catalogAll: ['catalog'] as const,

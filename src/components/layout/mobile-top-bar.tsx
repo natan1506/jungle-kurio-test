@@ -3,7 +3,6 @@ import { ChevronLeft } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-/** Barra superior das telas mobile do Figma: voltar + título (+ ação opcional). */
 export function MobileTopBar({ title, right, className }: { title?: string; right?: ReactNode; className?: string }) {
   const router = useRouter()
   return (

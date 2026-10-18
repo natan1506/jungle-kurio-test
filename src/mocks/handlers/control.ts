@@ -5,11 +5,7 @@ import { apiError, faults, readJson, resetNetworkState, route, type Fault } from
 import { connectedPeers, dropConnections, emitStaleNftEvent, replayLastEvent } from '../realtime'
 import { DEFAULT_CONFIG, isScenario, mockConfig, SCENARIOS, setConfig, type MockConfig } from '../scenarios'
 
-/**
- * Endpoints de controle da simulação (`/api/__mock/*`). Usados pelo painel
- * de mocks e pelos testes Playwright. Passam pela mesma camada MSW e os
- * eventos resultantes chegam ao app pelo socket.io-client.
- */
+// Controle da simulação (painel de mocks e testes E2E).
 export const controlHandlers = [
   route('get', '/__mock/state', 'control', () =>
     HttpResponse.json({ config: mockConfig.current, scenarios: SCENARIOS, peers: connectedPeers() }),
@@ -45,7 +41,6 @@ export const controlHandlers = [
     return HttpResponse.json({ pending: faults.length })
   }),
 
-  /** Altera preço/disponibilidade e emite `nft.updated`. */
   route<{ id: string }>('post', '/__mock/nfts/:id', 'control', async ({ request, params }) => {
     const body = await readJson<{ editionId?: string; priceEth?: string; available?: number }>(request)
     const nft = updateNft(params.id, body)

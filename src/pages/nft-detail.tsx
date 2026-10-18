@@ -91,7 +91,7 @@ function Purchase({ nft }: { nft: Nft }) {
   const limit = Math.max(0, Math.min(edition.available, edition.maxPerOrder) - inCart)
   const unavailable = edition.available === 0
 
-  // Quantidade efetiva sempre dentro do limite (inclusive após mudanças em tempo real).
+  // Respeita o limite mesmo se o estoque mudar em tempo real.
   const quantity = limit > 0 ? Math.min(requested, limit) : 1
 
   const submit = async (goToCart: boolean) => {

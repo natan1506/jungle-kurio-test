@@ -11,7 +11,6 @@ export type ConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'dis
 
 type Listener<T> = (payload: T) => void
 
-/** Barramento interno para a UI reagir a eventos já aplicados ao cache. */
 class Emitter<Events extends Record<string, unknown>> {
   private map = new Map<keyof Events, Set<Listener<never>>>()
   on<K extends keyof Events>(event: K, fn: Listener<Events[K]>) {
@@ -35,10 +34,7 @@ export const realtimeBus = new Emitter<{
 
 const SEEN_LIMIT = 500
 
-/**
- * Cliente Socket.IO: deduplica por `eventId`, descarta versões antigas,
- * aplica no cache do TanStack Query e reconcilia com REST após reconexão.
- */
+// Dedup por eventId, ignora versão antiga e reconcilia com REST ao reconectar.
 export class RealtimeClient {
   private socket: Socket | null = null
   private seen = new Set<string>()
@@ -58,11 +54,10 @@ export class RealtimeClient {
   async start() {
     const generation = ++this.generation
     this.userId = sessionStore.get()?.user.id ?? null
-    // Import tardio: o engine.io captura o WebSocket global no import, que precisa
-    // acontecer depois do MSW instalar a interceptação.
+    // Import tardio: o engine.io captura o WebSocket global no import (precisa ser o do MSW).
     await mocksReady
     const { io } = await import('socket.io-client')
-    // Descarta inícios obsoletos (ex.: montagem dupla do StrictMode).
+    // StrictMode monta duas vezes.
     if (generation !== this.generation) return
     const socket = io(REALTIME_URL, {
       transports: ['websocket'],
@@ -80,14 +75,13 @@ export class RealtimeClient {
       if (wasReconnect) this.reconcile()
     })
     socket.on('disconnect', (reason) => {
-      // Desconexão manual (logout/troca) não deve tentar reconectar sozinha.
       this.setState(reason === 'io client disconnect' ? 'disconnected' : 'reconnecting')
     })
     socket.io.on('reconnect_attempt', () => this.setState('reconnecting'))
     socket.on('nft.updated', (e: NftUpdatedEvent) => this.onNft(e))
     socket.on('order.updated', (e: OrderUpdatedEvent) => this.onOrder(e))
 
-    // Troca de sessão: reconecta com o novo token e descarta estado anterior.
+    // Outro usuário: reconecta com o novo token.
     this.unsubs.push(
       sessionStore.subscribe(() => {
         const next = sessionStore.get()?.user.id ?? null
@@ -121,7 +115,6 @@ export class RealtimeClient {
     for (const key of [...this.versions.keys()]) if (key.startsWith('order:')) this.versions.delete(key)
   }
 
-  /** true quando o evento deve ser aplicado (novo e mais recente). */
   private accept(e: { eventId: string; resource: { type: string; id: string }; version: number }) {
     if (this.seen.has(e.eventId)) return false
     this.seen.add(e.eventId)
@@ -133,7 +126,7 @@ export class RealtimeClient {
     return true
   }
 
-  /** Registra a versão conhecida via REST para não regredir com eventos antigos. */
+  // Versão vinda do REST, para não regredir com evento antigo.
   observeVersion(type: 'nft' | 'order', id: string, version: number) {
     const key = `${type}:${id}`
     if ((this.versions.get(key) ?? 0) < version) this.versions.set(key, version)
@@ -172,7 +165,7 @@ export class RealtimeClient {
           }
         : old,
     )
-    // O resumo do carrinho é recalculado pela API (fonte da verdade).
+    // O resumo do carrinho vem da API.
     const carts = this.queryClient.getQueriesData<Cart>({ queryKey: ['cart'] }).concat(
       this.queryClient.getQueriesData<Cart>({ queryKey: ['user'] }).filter(([key]) => key[2] === 'cart'),
     )
@@ -194,7 +187,6 @@ export class RealtimeClient {
         ? { ...old, status: e.data.status, txHash: e.data.txHash, declineReason: e.data.declineReason, version: e.version }
         : old,
     )
-    // Busca o snapshot completo do recibo e atualiza pendências/carrinho.
     void this.queryClient.invalidateQueries({ queryKey: key })
     void this.queryClient.invalidateQueries({ queryKey: qk.pendingOrders(userId) })
     if (e.data.status === 'confirmed') {
@@ -203,7 +195,6 @@ export class RealtimeClient {
     realtimeBus.emit('order.applied', e)
   }
 
-  /** Após reconectar, recursos ativos são reconciliados com a API REST. */
   private reconcile() {
     void this.queryClient.invalidateQueries({ refetchType: 'active' })
     realtimeBus.emit('reconciled', undefined)
