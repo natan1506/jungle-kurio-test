@@ -180,7 +180,22 @@ export function CheckoutPage() {
       setLiveStale([])
       setReviewOpen(true)
     },
-    onError: (e) => toast.error(isApiError(e) ? e.message : 'Não foi possível gerar a cotação.'),
+    onError: (e) => {
+      // Sem itens disponíveis (ex.: edição esgotou durante a revisão): fecha a
+      // revisão, reconcilia o carrinho e orienta o usuário a revisá-lo.
+      if (isApiError(e) && e.status === 422) {
+        setReviewOpen(false)
+        setQuote(null)
+        setLiveStale([])
+        void queryClient.invalidateQueries({ queryKey: ['user', userId, 'cart'] })
+        toast.error('Nenhum item do carrinho está disponível para compra.', {
+          description: 'Revise o carrinho: itens esgotados precisam ser removidos.',
+          action: { label: 'Ver carrinho', onClick: () => void navigate({ to: '/carrinho' }) },
+        })
+        return
+      }
+      if (!(isApiError(e) && e.status === 401)) toast.error(isApiError(e) ? e.message : 'Não foi possível gerar a cotação.')
+    },
   })
 
   // Trava síncrona contra clique duplo: o estado isPending só desabilita o botão
@@ -313,8 +328,8 @@ export function CheckoutPage() {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        <section aria-labelledby="buyer-title" className="flex flex-col gap-5">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
+        <section aria-labelledby="buyer-title" className="flex min-w-0 flex-col gap-5">
           <div className="flex items-center justify-between gap-2">
             <h2 id="buyer-title" className="text-base font-semibold">
               Perfil do colecionador
@@ -474,7 +489,7 @@ export function CheckoutPage() {
               </Link>
             </legend>
             {walletOptions.length > 0 && (
-              <RadioGroup value={walletId ?? undefined} onValueChange={selectWallet} aria-label="Carteira cadastrada" className="gap-2">
+              <RadioGroup value={walletId ?? undefined} onValueChange={selectWallet} aria-label="Carteira cadastrada" className="grid-cols-1 gap-2">
                 {walletOptions.map((w) => (
                   <Label
                     key={w.id}
@@ -507,7 +522,7 @@ export function CheckoutPage() {
                 setConnection({ status: "disconnected" })
               }}
               aria-label="Tipo de carteira"
-              className="gap-2"
+              className="grid-cols-1 gap-2"
             >
               {WALLET_TYPES.map((t) => (
                 <Label

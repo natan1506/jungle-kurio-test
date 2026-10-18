@@ -236,6 +236,12 @@ export function maybeTriggerCheckoutScenario(quote: QuoteRecord) {
 
 /* ---------- Pedidos ---------- */
 
+export const EXPLORERS = {
+  ethereum: { name: 'Etherscan', url: 'https://etherscan.io' },
+  polygon: { name: 'Polygonscan', url: 'https://polygonscan.com' },
+  solana: { name: 'Solscan', url: 'https://solscan.io' },
+} as const
+
 const orderTimers = new Map<string, ReturnType<typeof setTimeout>>()
 
 function randomHex(len: number) {
@@ -279,7 +285,7 @@ export function resolveOrder(order: OrderRecord, forced?: 'confirmed' | 'decline
     touch(cart)
     order.status = 'confirmed'
     order.txHash = `0x${randomHex(64)}`
-    order.explorerUrl = `https://etherscan.io/tx/${order.txHash}`
+    order.explorerUrl = `${EXPLORERS[order.network].url}/tx/${order.txHash}`
   } else {
     order.status = 'declined'
     order.declineReason = declineReason

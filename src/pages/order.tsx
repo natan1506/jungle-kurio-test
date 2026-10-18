@@ -14,6 +14,9 @@ import { useRealtime } from '@/realtime/hooks'
 
 const route = getRouteApi('/pedidos/$orderId')
 
+/** Explorador de blocos por rede (referências simuladas). */
+const EXPLORER_NAMES = { ethereum: 'Etherscan', polygon: 'Polygonscan', solana: 'Solscan' } as const
+
 function Receipt({ order }: { order: Order }) {
   const network = NETWORKS.find((n) => n.key === order.network)?.label
   const date = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(order.createdAt))
@@ -81,8 +84,8 @@ function Receipt({ order }: { order: Order }) {
                     </div>
                   </div>
                 </td>
-                <td className="py-2 text-center tabular-nums">(x {l.quantity})</td>
-                <td className="py-2 text-right font-semibold tabular-nums text-highlight">{formatEth(l.lineTotalEth)}</td>
+                <td className="whitespace-nowrap py-2 text-center tabular-nums">(x {l.quantity})</td>
+                <td className="whitespace-nowrap py-2 pl-2 text-right font-semibold tabular-nums text-highlight">{formatEth(l.lineTotalEth)}</td>
               </tr>
             ))}
           </tbody>
@@ -112,7 +115,7 @@ function Receipt({ order }: { order: Order }) {
           {order.explorerUrl && (
             <Button asChild>
               <a href={order.explorerUrl} target="_blank" rel="noreferrer noopener">
-                Ver no Etherscan <ExternalLink aria-hidden />
+                Ver no {EXPLORER_NAMES[order.network]} <ExternalLink aria-hidden />
                 <span className="sr-only">(abre em nova aba; referência simulada)</span>
               </a>
             </Button>
