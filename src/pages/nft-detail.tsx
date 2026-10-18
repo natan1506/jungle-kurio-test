@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAddToCart, useCart } from '@/features/cart/hooks'
 import { useCatalog, useNft } from '@/features/catalog/hooks'
 import { FavoriteButton, NftCard, NftCardSkeleton } from '@/features/catalog/nft-card'
-import { formatEth } from '@/lib/money'
+import { eth, formatEth } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { useNftLiveNotice } from '@/realtime/hooks'
 
@@ -168,8 +168,12 @@ function Purchase({ nft }: { nft: Nft }) {
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm text-muted-foreground">Qtd.</span>
         <QuantityStepper value={quantity} max={Math.max(1, limit)} onChange={setQuantity} label="Quantidade" disabled={unavailable || limit === 0} />
-        <span className="ml-auto text-lg font-semibold text-highlight tabular-nums" data-testid="detail-total">
-          {formatEth(edition.priceEth)}
+        <span className="ml-auto text-right" aria-live="polite">
+          <span className="block text-lg font-semibold text-highlight tabular-nums" data-testid="detail-total">
+            <span className="sr-only">Total: </span>
+            {formatEth(eth(edition.priceEth).times(quantity))}
+          </span>
+          {quantity > 1 && <span className="block text-xs text-muted-foreground tabular-nums">{formatEth(edition.priceEth)} cada</span>}
         </span>
       </div>
       {limit === 0 && !unavailable && (
@@ -220,7 +224,7 @@ function Related({ nft }: { nft: Nft }) {
 function DetailSkeleton() {
   return (
     <div className="container-page py-8" aria-busy="true" aria-label="Carregando NFT">
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[80px_1fr]">
           <div className="hidden flex-col gap-3 md:flex">
             {Array.from({ length: 4 }, (_, i) => (
@@ -292,7 +296,7 @@ export function NftDetailPage() {
           </li>
         </ol>
       </nav>
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <Gallery nft={nft} />
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-start justify-between gap-2">
@@ -340,11 +344,11 @@ export function NftDetailPage() {
       </div>
 
       <Tabs defaultValue="details" className="mt-10">
-        <TabsList className="h-auto gap-4 rounded-none border-b border-border bg-transparent p-0">
-          <TabsTrigger value="details" className="rounded-none border-0 border-b-2 border-transparent px-0 pb-2 data-[state=active]:border-highlight data-[state=active]:bg-transparent data-[state=active]:text-highlight">
+        <TabsList className="h-auto w-full max-w-full justify-start gap-4 overflow-x-auto rounded-none border-b border-border bg-transparent p-0">
+          <TabsTrigger value="details" className="flex-none rounded-none border-0 border-b-2 border-transparent px-0 pb-2 data-[state=active]:border-highlight data-[state=active]:bg-transparent data-[state=active]:text-highlight">
             Detalhes do NFT
           </TabsTrigger>
-          <TabsTrigger value="reviews" className="rounded-none border-0 border-b-2 border-transparent px-0 pb-2 data-[state=active]:border-highlight data-[state=active]:bg-transparent data-[state=active]:text-highlight">
+          <TabsTrigger value="reviews" className="flex-none rounded-none border-0 border-b-2 border-transparent px-0 pb-2 data-[state=active]:border-highlight data-[state=active]:bg-transparent data-[state=active]:text-highlight">
             Avaliações de colecionadores ({nft.reviewsCount})
           </TabsTrigger>
         </TabsList>
