@@ -1,6 +1,6 @@
 {
   "env": {
-    "date": "2026-10-17T21:28:07.602Z",
+    "date": "2026-10-18T09:15:36.985Z",
     "lighthouse": "13.5.0",
     "node": "v24.22.0",
     "chrome": "/Users/natansouza/Library/Caches/ms-playwright/chromium-1248/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
@@ -21,29 +21,29 @@
       "path": "/",
       "profile": "mobile",
       "median": {
-        "performance": 77,
+        "performance": 79,
         "accessibility": 97,
         "best-practices": 100,
         "seo": 100
       },
-      "lcpMs": 4174,
+      "lcpMs": 4160,
       "cls": 0,
-      "tbtMs": 295,
+      "tbtMs": 265,
       "runs": [
         {
-          "performance": 74,
-          "accessibility": 97,
-          "best-practices": 100,
-          "seo": 100
-        },
-        {
-          "performance": 77,
-          "accessibility": 97,
-          "best-practices": 100,
-          "seo": 100
-        },
-        {
           "performance": 78,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 79,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 79,
           "accessibility": 97,
           "best-practices": 100,
           "seo": 100
@@ -60,9 +60,9 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcpMs": 862,
+      "lcpMs": 857,
       "cls": 0,
-      "tbtMs": 11,
+      "tbtMs": 10,
       "runs": [
         {
           "performance": 99,
@@ -89,29 +89,29 @@
       "path": "/nft/emerald-ape-042",
       "profile": "mobile",
       "median": {
-        "performance": 81,
+        "performance": 80,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "lcpMs": 3785,
-      "cls": 0.007,
-      "tbtMs": 277,
+      "lcpMs": 3931,
+      "cls": 0,
+      "tbtMs": 259,
       "runs": [
         {
-          "performance": 76,
-          "accessibility": 100,
-          "best-practices": 100,
-          "seo": 100
-        },
-        {
           "performance": 81,
           "accessibility": 100,
           "best-practices": 100,
           "seo": 100
         },
         {
-          "performance": 81,
+          "performance": 80,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 80,
           "accessibility": 100,
           "best-practices": 100,
           "seo": 100
@@ -128,7 +128,7 @@
         "best-practices": 100,
         "seo": 100
       },
-      "lcpMs": 817,
+      "lcpMs": 815,
       "cls": 0.003,
       "tbtMs": 0,
       "runs": [
