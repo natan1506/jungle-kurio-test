@@ -61,7 +61,8 @@ Todo evento tem `{ eventId, type, resource: { type, id }, version, occurredAt, d
 
 ## Sessão
 
-- Login e cadastro devolvem um token e `expiresAt` (30 min, ou 20 s no cenário `session-expired`). O token fica no `localStorage`; senha nunca.
+- Login e cadastro devolvem um token opaco e `expiresAt` (30 min, ou 20 s no cenário `session-expired`). O token fica no `localStorage`; a senha nunca é guardada.
+- O `localStorage` foi escolhido porque não há backend real que emita cookie. Num backend de verdade, o certo seria um cookie `httpOnly` + `Secure` + `SameSite`, que o JS não lê e fica protegido de XSS; o Axios passaria a usar `withCredentials` e o `Authorization` sairia do interceptor. Hoje a exposição é limitada: o token é opaco, expira em 30 min e o logout o revoga.
 - O app revalida a sessão ao abrir e na hora em que ela expira.
 - Um 401 encerra a sessão. Em rota privada, o app vai para `/entrar?redirect=...&reason=expired` e volta depois do login. O rascunho do checkout fica no `sessionStorage`.
 - Logout e troca de usuário apagam do cache tudo que tem o id do usuário anterior e reconectam o socket.
@@ -70,6 +71,7 @@ Todo evento tem `{ eventId, type, resource: { type, id }, version, occurredAt, d
 ## Carrinho
 
 - O carrinho sempre fica no servidor. O visitante usa um carrinho anônimo (`X-Cart-Id`), e no login ele é mesclado ao do usuário antes de a sessão aparecer na UI.
+- A taxa exibida no carrinho é estimada pela rede da carteira principal (visitante: Ethereum). A taxa final é a da rede escolhida no checkout, que vem na cotação.
 - O limite de quantidade é o menor entre disponível e máximo por pedido. Se o estoque cai, a API ajusta a quantidade e marca o item (preço mudou, quantidade reduzida, esgotado) até o usuário clicar "Entendi". Item esgotado bloqueia o checkout.
 - Mudar a quantidade e favoritar são otimistas, com rollback.
 - Depois da confirmação, a API remove só o que foi comprado. Se o pedido falha ou é recusado, nada sai do carrinho.
@@ -162,6 +164,7 @@ O próximo passo para chegar a 90 no mobile seria pré-renderizar as rotas públ
 ## Limitações
 
 - Carteiras, conexão e transações são simuladas; não há backend nem blockchain.
+- O token de sessão fica no `localStorage`, o que é aceitável para o mock. Em produção, ele iria para um cookie `httpOnly` (ver Sessão).
 - Eventos em tempo real não são compartilhados entre abas.
 - Avaliações, atividade, ofertas, downloads, suporte e conteúdo editorial estão fora do escopo.
 - A Performance mobile do Lighthouse fica em ~80 (ver acima).

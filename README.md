@@ -34,6 +34,7 @@ npx playwright install chromium
 | `npm run build` / `npm run preview` | build de produção (com mocks) e preview em :4173 |
 | `npm run typecheck` / `npm run lint` | tsc e oxlint |
 | `npm test` | Playwright: builda, sobe o preview e roda desktop + mobile |
+| `npm run test:unit` | Vitest (valores em ETH, eventos, cotação, busca) |
 | `npm run test:visual:update` | regera as baselines visuais |
 | `npm run test:report` | abre o relatório HTML |
 | `npm run lighthouse` | auditoria Lighthouse (rode o build antes) |
@@ -101,6 +102,8 @@ Os fluxos abaixo partem do login com a Ana e de um item no carrinho.
 - **Lentidão, erro e retry:** `slow`, `server-error`, `flaky` e `offline`.
 
 ## Testes
+
+O `npm run test:unit` roda os testes unitários (Vitest) da lógica sensível: cálculos em ETH sem float, deduplicação/versão de eventos do socket, resumo e diff de cotação, schema da URL do catálogo e proteção de redirect.
 
 `npm test` roda as specs em `e2e/` no Chromium, em desktop (1440) e mobile (390, specs marcadas com `@main`):
 - cobrem os 12 itens pedidos;
