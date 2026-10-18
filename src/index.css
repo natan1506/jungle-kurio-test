@@ -87,6 +87,10 @@
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+  /* fieldset tem min-width: min-content por padrão; impede overflow em telas estreitas. */
+  fieldset {
+    min-width: 0;
+  }
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;

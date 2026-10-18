@@ -1,5 +1,5 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import { AlertCircle, ArrowRight, Search, SlidersHorizontal } from 'lucide-react'
+import { AlertCircle, ArrowRight, Loader2, Search, SlidersHorizontal } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SORTS, TABS, type NftListResponse, type SortKey, type TabKey } from '@/api/types'
 import { NftImage } from '@/components/nft-image'
@@ -249,14 +249,14 @@ function Catalog({ ctl }: { ctl: CatalogController }) {
       <h2 id="catalog-title" className="sr-only">
         Catálogo de NFTs
       </h2>
-      <div className="grid gap-6 md:grid-cols-[240px_1fr]">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[240px_1fr]">
         <aside className="hidden flex-col gap-6 md:flex" aria-label="Filtros">
           <CatalogFilters search={search} facets={data?.facets} priceRange={data?.priceRange} onChange={update} idPrefix="desk" />
           <Spotlight />
         </aside>
 
         <div ref={gridRef} className="flex min-w-0 scroll-mt-24 flex-col gap-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div role="tablist" aria-label="Seções do catálogo" className="flex gap-5 overflow-x-auto">
               {TABS.map((t) => {
                 const selected = (search.tab ?? 'all') === t.key
@@ -277,12 +277,12 @@ function Catalog({ ctl }: { ctl: CatalogController }) {
                 )
               })}
             </div>
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-2 text-sm">
               <span id="sort-label" className="whitespace-nowrap text-muted-foreground">
                 Ordenar por:
               </span>
               <Select value={search.sort ?? 'recent'} onValueChange={(v) => update({ sort: v === 'recent' ? undefined : (v as SortKey) })}>
-                <SelectTrigger aria-labelledby="sort-label" className="h-9 w-[210px] border-none bg-transparent px-1 shadow-none">
+                <SelectTrigger aria-labelledby="sort-label" className="h-9 w-auto max-w-full border-none bg-transparent px-1 shadow-none">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent position="popper" align="end">
@@ -312,6 +312,12 @@ function Catalog({ ctl }: { ctl: CatalogController }) {
           <p className="sr-only" aria-live="polite">
             {data && !query.isFetching ? `${data.total} NFTs encontrados. Página ${data.page} de ${data.totalPages}.` : ''}
           </p>
+          {/* Atualização em segundo plano (refetch com dados já exibidos). */}
+          {data && query.isFetching && !showSkeleton && (
+            <p role="status" className="flex items-center gap-2 text-xs text-muted-foreground" data-testid="catalog-refreshing">
+              <Loader2 className="size-3 animate-spin" aria-hidden /> Atualizando resultados…
+            </p>
+          )}
 
           {search.favorites && !session ? (
             <EmptyState title="Entre para ver seus favoritos" action={<Link to="/entrar" search={{ redirect: '/?favorites=true' }} className="text-highlight underline">Entrar</Link>} />

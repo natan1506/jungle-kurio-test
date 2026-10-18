@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { AlertCircle, AlertTriangle, Trash2 } from 'lucide-react'
+import { AlertCircle, AlertTriangle, Loader2, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { isApiError } from '@/api/http'
 import type { Cart, CartItem } from '@/api/types'
@@ -171,8 +171,8 @@ export function CartPage() {
         / Carrinho
       </nav>
       <h1 className="mb-6 hidden text-xl font-bold md:block">Carrinho de NFTs</h1>
-      <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <section aria-label="Itens do carrinho">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
+        <section aria-label="Itens do carrinho" className="min-w-0">
           <div className="mb-2 hidden grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_40px] gap-3 px-3 text-sm font-semibold md:grid" aria-hidden>
             <span>NFTs</span>
             <span>Preço</span>
@@ -225,8 +225,13 @@ export function CartPage() {
         </section>
 
         <aside aria-labelledby="summary-title" className="flex h-fit flex-col gap-4 rounded-xl bg-card p-5 lg:sticky lg:top-24">
-          <h2 id="summary-title" className="text-base font-semibold">
+          <h2 id="summary-title" className="flex items-center justify-between text-base font-semibold">
             Resumo da carteira
+            {data && cart.isFetching && (
+              <span role="status" className="flex items-center gap-1 text-xs font-normal text-muted-foreground" data-testid="cart-refreshing">
+                <Loader2 className="size-3 animate-spin" aria-hidden /> Atualizando
+              </span>
+            )}
           </h2>
           {data ? <CouponForm cart={data} /> : <Skeleton className="h-10 w-full" />}
           {data ? <PriceSummary summary={data.summary} coupon={data.coupon} /> : <PriceSummarySkeleton />}
