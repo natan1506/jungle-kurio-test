@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a1411" />
+    <meta name="description" content="Kurio — marketplace de NFTs: descubra, colecione e compre arte digital de criadores emergentes e consagrados." />
+    <title>Kurio · Marketplace de NFTs</title>
+    <script>
+      // A arte do destaque da página inicial é conhecida: começa a baixar antes do JS.
+      if (location.pathname === "/") {
+        var l = document.createElement("link");
+        l.rel = "preload"; l.as = "image"; l.type = "image/avif"; l.fetchPriority = "high";
+        l.setAttribute("imagesrcset", "/nfts/emerald-ape-320.avif 320w, /nfts/emerald-ape-640.avif 640w, /nfts/emerald-ape-960.avif 960w");
+        l.setAttribute("imagesizes", "(min-width: 768px) 448px, 40vw");
+        document.head.appendChild(l);
+      }
+    </script>
+    <style>
+      html,body{background:#1a1411;color:#f3e9dd;margin:0}
+      .app-shell{max-width:1200px;margin:0 auto;padding:12px 16px;font-family:ui-monospace,Menlo,monospace}
+      .app-shell__bar{height:40px;display:flex;align-items:center}
+      .app-shell__logo{letter-spacing:.3em;font-weight:700;font-size:14px}
+      .app-shell__hero{display:grid;grid-template-columns:1fr 42%;gap:12px;margin-top:12px;padding:16px;border-radius:16px;background:#2d231e}
+      .app-shell__text{display:flex;flex-direction:column;gap:10px;justify-content:center}
+      .app-shell__text span{display:block;height:14px;border-radius:6px;background:#3d3029}
+      .app-shell__text span:nth-child(2){height:28px;width:85%}
+      .app-shell__img{aspect-ratio:1;border-radius:12px;background:#3d3029}
+      .app-shell__grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+      .app-shell__grid div{aspect-ratio:3/4;border-radius:12px;background:#241c18}
+      @media (min-width:768px){.app-shell{padding:12px 32px}.app-shell__hero{grid-template-columns:1.1fr 1fr;background:none;padding:40px 0}.app-shell__grid{grid-template-columns:repeat(3,1fr)}}
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <!-- App shell: primeira pintura antes do JS; o React substitui este conteúdo. -->
+      <div class="app-shell" aria-hidden="true">
+        <div class="app-shell__bar"><span class="app-shell__logo">KURIO</span></div>
+        <div class="app-shell__hero"><div class="app-shell__text"><span></span><span></span><span></span></div><div class="app-shell__img"></div></div>
+        <div class="app-shell__grid"><div></div><div></div><div></div><div></div></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

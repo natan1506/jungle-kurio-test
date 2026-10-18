@@ -1,0 +1,156 @@
+{
+  "env": {
+    "date": "2026-10-17T21:28:07.602Z",
+    "lighthouse": "13.5.0",
+    "node": "v24.22.0",
+    "chrome": "/Users/natansouza/Library/Caches/ms-playwright/chromium-1248/chrome-mac-x64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "os": "Darwin 25.6.0 x64",
+    "cpu": "Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz",
+    "runsPerProfile": 3,
+    "server": "vite preview (build de produção, mocks MSW ativos, cenário default)"
+  },
+  "targets": {
+    "performance": 90,
+    "accessibility": 95,
+    "best-practices": 95,
+    "seo": 90
+  },
+  "summary": [
+    {
+      "page": "inicio",
+      "path": "/",
+      "profile": "mobile",
+      "median": {
+        "performance": 77,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 4174,
+      "cls": 0,
+      "tbtMs": 295,
+      "runs": [
+        {
+          "performance": 74,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 77,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 78,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        }
+      ]
+    },
+    {
+      "page": "inicio",
+      "path": "/",
+      "profile": "desktop",
+      "median": {
+        "performance": 99,
+        "accessibility": 97,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 862,
+      "cls": 0,
+      "tbtMs": 11,
+      "runs": [
+        {
+          "performance": 99,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 99,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 99,
+          "accessibility": 97,
+          "best-practices": 100,
+          "seo": 100
+        }
+      ]
+    },
+    {
+      "page": "detalhe",
+      "path": "/nft/emerald-ape-042",
+      "profile": "mobile",
+      "median": {
+        "performance": 81,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 3785,
+      "cls": 0.007,
+      "tbtMs": 277,
+      "runs": [
+        {
+          "performance": 76,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 81,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 81,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        }
+      ]
+    },
+    {
+      "page": "detalhe",
+      "path": "/nft/emerald-ape-042",
+      "profile": "desktop",
+      "median": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "lcpMs": 817,
+      "cls": 0.003,
+      "tbtMs": 0,
+      "runs": [
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        },
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 100,
+          "seo": 100
+        }
+      ]
+    }
+  ]
+}
