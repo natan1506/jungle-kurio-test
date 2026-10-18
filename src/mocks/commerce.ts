@@ -88,14 +88,17 @@ export function cartView(cart: CartRecord): Cart {
   }
   if (mutated) touch(cart)
   const { coupon } = couponFor(cart.couponCode)
+  const owner = cart.ownerId ? db.state.users.find((u) => u.id === cart.ownerId) : undefined
+  const feeNetwork: NetworkKey = owner?.wallets.find((w) => w.slot === 'primary')?.network ?? 'ethereum'
   return {
     id: cart.id,
     items,
+    feeNetwork,
     coupon,
     summary: summarize(
       items.map((i) => new Big(i.lineTotalEth)),
       coupon,
-      items.length ? 'ethereum' : null,
+      items.length ? feeNetwork : null,
     ),
     itemCount: items.reduce((a, i) => a + i.quantity, 0),
     version: cart.version,

@@ -1,9 +1,10 @@
-import type { Coupon, PriceSummary as Summary } from '@/api/types'
+import { NETWORKS, type Coupon, type NetworkKey, type PriceSummary as Summary } from '@/api/types'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatEth } from '@/lib/money'
 import { cn } from '@/lib/utils'
 
-export function PriceSummary({ summary, coupon, className, feeHint = 'Taxa estimada' }: { summary: Summary; coupon: Coupon | null; className?: string; feeHint?: string }) {
+export function PriceSummary({ summary, coupon, className, feeHint = 'Taxa estimada', feeNetwork }: { summary: Summary; coupon: Coupon | null; className?: string; feeHint?: string; feeNetwork?: NetworkKey }) {
+  const networkLabel = feeNetwork ? NETWORKS.find((n) => n.key === feeNetwork)?.label : null
   return (
     <dl className={cn('flex flex-col gap-2 text-sm', className)} data-testid="price-summary">
       <div className="flex justify-between">
@@ -19,7 +20,7 @@ export function PriceSummary({ summary, coupon, className, feeHint = 'Taxa estim
         </dd>
       </div>
       <div className="flex justify-between">
-        <dt>Taxa de rede</dt>
+        <dt>Taxa de rede{networkLabel ? ` (${networkLabel})` : ''}</dt>
         <dd className="whitespace-nowrap text-right tabular-nums" data-testid="summary-fee">
           {formatEth(summary.networkFeeEth)}
           <span className="block whitespace-normal text-[10px] text-highlight">{feeHint}</span>

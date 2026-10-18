@@ -218,6 +218,8 @@ export interface Cart {
   items: CartItem[]
   coupon: Coupon | null
   summary: PriceSummary
+  // rede usada para estimar a taxa (carteira principal; visitante = ethereum)
+  feeNetwork: NetworkKey
   itemCount: number
   version: number
   updatedAt: string

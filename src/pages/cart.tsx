@@ -234,7 +234,7 @@ export function CartPage() {
             )}
           </h2>
           {data ? <CouponForm cart={data} /> : <Skeleton className="h-10 w-full" />}
-          {data ? <PriceSummary summary={data.summary} coupon={data.coupon} /> : <PriceSummarySkeleton />}
+          {data ? <PriceSummary summary={data.summary} coupon={data.coupon} feeNetwork={data.feeNetwork} /> : <PriceSummarySkeleton />}
           <p className="sr-only" aria-live="polite">
             {data ? `Total atualizado: ${formatEth(data.summary.totalEth)}` : ''}
           </p>

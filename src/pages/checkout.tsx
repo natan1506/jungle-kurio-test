@@ -474,7 +474,14 @@ export function CheckoutPage() {
               Aplique aqui
             </Link>
           </p>
-          {cartData ? <PriceSummary summary={cartData.summary} coupon={cartData.coupon} feeHint="Taxa estimada (confirmada na revisão)" /> : null}
+          {cartData ? (
+            <PriceSummary
+              summary={cartData.summary}
+              coupon={cartData.coupon}
+              feeNetwork={cartData.feeNetwork}
+              feeHint={form && form.network !== cartData.feeNetwork ? 'Estimada; a taxa da rede escolhida é cotada na revisão' : 'Taxa estimada (confirmada na revisão)'}
+            />
+          ) : null}
 
           <fieldset className="flex flex-col gap-3">
             <legend className="mb-2 flex w-full items-center justify-between text-sm font-semibold">
@@ -611,7 +618,7 @@ export function CheckoutPage() {
                   </li>
                 ))}
               </ul>
-              <PriceSummary summary={quote.summary} coupon={quote.coupon} feeHint="Taxa cotada" />
+              <PriceSummary summary={quote.summary} coupon={quote.coupon} feeNetwork={quote.network} feeHint="Taxa cotada" />
             </>
           )}
           {recoverable && (
